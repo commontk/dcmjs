@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+
+    <title>Dcmjs by pieper</title>
+  </head>
+
+  <body>
+
+    <header>
+      <div class="container">
+        <h1>Dcmjs</h1>
+        <h2>Web infrastructure for the cross-compiled dcmtk in javascript (uses emscripten)</h2>
+
+        <section id="downloads">
+          <a href="https://github.com/pieper/dcmjs/zipball/master" class="btn">Download as .zip</a>
+          <a href="https://github.com/pieper/dcmjs/tarball/master" class="btn">Download as .tar.gz</a>
+          <a href="https://github.com/pieper/dcmjs" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
+        </section>
+      </div>
+    </header>
+
+    <div class="container">
+      <section id="main_content">
+        <h3>
+<a name="welcome-to-dcmjs" class="anchor" href="#welcome-to-dcmjs"><span class="octicon octicon-link"></span></a>Welcome to dcmjs</h3>
+
+<p>dcmjs is a javascript cross-compilation of dcmtk (dcmtk.org) for use
+in a javascript environment.  Uses emscripten.</p>
+
+<pre><code>                  http://www.dcmjs.org
+</code></pre>
+
+<p>See License.txt for information on using and contributing.</p>
+
+<h3>
+<a name="why" class="anchor" href="#why"><span class="octicon octicon-link"></span></a>Why??</h3>
+
+<p>DICOM is a wonderful but tricky standard to support.  Particularly when working with real-world DICOM implementations it is very common to run into non-standard data file, or even standard files that use valid but unusual aspects of the standard.  Lucky people can ignore these problem DICOM files.  Unlucky people need to find workarounds and deal the files.  Fortunately for the unlucky people, a community of software developers had worked around many of the issues and dcmtk is a robust toolkit that embeds hard-earned knowledge in a C++ library.</p>
+
+<p>But the dcmtk C++ library needs to be compiled to be useful.  And it needs to be installed on a computer in order to operate.  Traditionally, C++ compilers, linkers, and packaging tools are used for this task.  It's a task to build a package and it's sometimes a burden to have users install packages on their computers.  Not to mention there are support issues with native software installations.</p>
+
+<p>Instead, for some applications we'd like to have a website that understands dicom and is able to process it locally.  A very common use case for this is running dicom deidentification code, where the patient confidential data cannot leave the host institution without being deidentified.  In these situations a server-based application can't work.  This is the case that led us to try building dcmjs.</p>
+
+<h3>
+<a name="what" class="anchor" href="#what"><span class="octicon octicon-link"></span></a>What??</h3>
+
+<p>The dcmtk code is compiles with cmake in the normal way, but using the emsdk.  More details on how to replicate this will be added as the system gets refined.  For now you can use the .js files as-is.</p>
+
+<h3>
+<a name="authors-and-contributors" class="anchor" href="#authors-and-contributors"><span class="octicon octicon-link"></span></a>Authors and Contributors</h3>
+
+<p>dcmjs is a product of the May 2014 CTK Hackfest, hosted at Washington University, St. Louis.  See the events page at commontk.org for more info.  DCMTK is from Offis (offis.de)</p>
+
+<h3>
+<a name="support-or-contact" class="anchor" href="#support-or-contact"><span class="octicon octicon-link"></span></a>Support or Contact</h3>
+
+<p>Not yet supported so don't expect this to work any time soon.</p>
+      </section>
+    </div>
+
+              <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-50750505-1");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>
