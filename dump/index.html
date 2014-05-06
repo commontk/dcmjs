@@ -6,25 +6,49 @@
 
     <link rel="stylesheet" type="text/css" href="../stylesheets/stylesheet.css" media="screen" />
     <link rel="stylesheet" type="text/css" href="../stylesheets/pygment_trac.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="../stylesheets/print.css" media="print" />
 
-    <title>dcmjs by pieper</title>
+    <script src="../javascripts/jquery-1.10.2.js"></script>
+    <script src="../javascripts/dcmdump.js"></script>
+    
+    <script>
+
+$(function() {
+
+  var myPrint = function(s) {
+    $('#main_content').append('<p>' + s + '</p>');
+  };
+
+  console.log('starting');
+
+  var x = 100;
+  myPrint(x);
+
+  $('#main_content p').remove();
+
+  Module.print = myPrint;
+  Module.callMain(['f.dcm']);
+
+
+});
+
+    </script>
+
+    <title>dcmjs by commontk</title>
   </head>
 
   <body>
 
-    <header>
-      <div class="container">
-        <h1>dcmjs dump</h1>
-        <h2>View the header of a dicom file using dcmjs</h2>
-      </div>
-    </header>
+<header>
+  <div class="container">
+    <h1>dcmjs dump</h1>
+    <h2>View the header of a dicom file using dcmjs</h2>
+  </div>
+</header>
 
-    <div class="container">
-      <section id="main_content">
-        <h3>
+<div class="container">
+  <section id="main_content">
 
-<p>Not yet supported so don't expect this to work any time soon.</p>
+    <p>Working...</p>
 
   </section>
 </div>
