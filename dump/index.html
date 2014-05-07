@@ -14,21 +14,110 @@
 
 $(function() {
 
-  var myPrint = function(s) {
-    $('#main_content').append('<p>' + s + '</p>');
+  /*
+    File management 
+        http://www.html5rocks.com/en/tutorials/file/dndfiles/
+  */
+  // Check for the various File API support.
+  if (window.File && window.FileReader && window.FileList && window.Blob) {
+    // Great success! All the File APIs are supported.
+    <!-- 
+    console.log('The File APIs ARE not fully supported in this browser.');
+    -->
+  } else {
+    alert('The File APIs are not fully supported in this browser.');
+  }
+
+  /*
+    Read the files and invoke dcmdump
+  */
+  var readFile = function(file) {
+    var reader = new FileReader();
+
+    console.log(file);
+    // Closure to capture the file information.
+    reader.onload = (function(file) {
+      return function(e) {
+        console.log(e);
+      };
+    })(file);
+
+    // Read in the image file as a data URL.
+    reader.readAsDataURL(file);
+
+    //Module.callMain(['f.dcm']);
   };
 
-  console.log('starting');
+  var readSelectedFiles = function(files) {
+    $.each(files, function(index,file) {
+      readFile(file);
+    });
+  };
 
-  var x = 100;
-  myPrint(x);
+  // File selector
+  function handleFileSelect(evt) {
+    var files = evt.target.files; // FileList object
 
+    readSelectedFiles(files);
+
+    // files is a FileList of File objects. List some properties.
+    var output = [];
+    for (var i = 0, f; f = files[i]; i++) {
+      output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
+                  f.size, ' bytes, last modified: ',
+                  f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a',
+                  '</li>');
+    }
+    document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
+  }
+
+  document.getElementById('files').addEventListener('change', handleFileSelect, false);
+
+
+  // Drag and Drop
+  function handleFileDrop(evt) {
+    evt.stopPropagation();
+    evt.preventDefault();
+
+    var files = evt.dataTransfer.files; // FileList object.
+
+    readSelectedFiles(files);
+
+    // files is a FileList of File objects. List some properties.
+    var output = [];
+    for (var i = 0, f; f = files[i]; i++) {
+      output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
+                  f.size, ' bytes, last modified: ',
+                  f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a',
+                  '</li>');
+    }
+    document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
+  }
+
+  function handleDragOver(evt) {
+    evt.stopPropagation();
+    evt.preventDefault();
+    evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+  }
+
+  // Setup the dnd listeners.
+  var dropZone = document.getElementById('drop_zone');
+  dropZone.addEventListener('dragover', handleDragOver, false);
+  dropZone.addEventListener('drop', handleFileDrop, false);
+
+  /*
+    Override print
+  */
+  var printToMainContext = function(s) {
+    $('#main_content').append('<p>' + s + '</p>');
+  };
+  Module.print = printToMainContext;
+
+  /*
+    Clean up and start
+  */
   $('#main_content p').remove();
-
-  Module.print = myPrint;
-  Module.callMain(['f.dcm']);
-
-
+  console.log('starting');
 });
 
     </script>
@@ -48,6 +137,14 @@ $(function() {
 <div class="container">
   <section id="main_content">
 
+    <!-- File selector -->
+    <input type="file" id="files" name="files[]" multiple />
+    <output id="list"></output>
+
+    <!-- Drag and Drop -->
+    <div id="drop_zone">Drop DICOM files here</div>
+    <output id="list"></output>
+
     <p>Working...</p>
 
   </section>
@@ -55,17 +152,17 @@ $(function() {
 
 
 
-    <!-- google analytics -->
-              <script type="text/javascript">
-            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-          </script>
-          <script type="text/javascript">
-            try {
-              var pageTracker = _gat._getTracker("UA-50750505-1");
-            pageTracker._trackPageview();
-            } catch(err) {}
-          </script>
+<!-- google analytics -->
+<script type="text/javascript">
+  var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+  document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+  try {
+    var pageTracker = _gat._getTracker("UA-50750505-1");
+  pageTracker._trackPageview();
+  } catch(err) {}
+</script>
 
   </body>
 </html>
