@@ -58,7 +58,7 @@ header h1 {
 }
 
 header h1:before {
-  content: "./ ";
+  content: ":: ";
   font-size: 24px;
 }
 
@@ -227,8 +227,9 @@ hr {
 */
 
 a {
-  color: #63c0f5;
-  text-shadow: 0 0 5px rgba(104, 182, 255, 0.5);
+  //color: #63c0f5;
+  color: #66a;
+  text-shadow: 0 0 5px rgba(10, 10, 30, 0.5);
 }
 
 /* Clearfix */
