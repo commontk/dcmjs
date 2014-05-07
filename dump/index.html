@@ -33,21 +33,17 @@ $(function() {
   var readFile = function(file) {
     var reader = new FileReader();
 
-    console.log(file);
     // Closure to capture the file information.
     reader.onload = (function(file) {
       return function(e) {
         var fileName = '/uploadedfile.dcm';
-        console.log(e);
 
+        $('#main_content').append('<p class="output">Writing...</p>');
         var content = new Int8Array(reader.result);
-        var blob = new Blob([content], { type: 'application/octet-binary' });
-        console.log(content);
-        console.log(blob);
         FS.writeFile(fileName, content, {encoding: "binary"});
 
+        $('#main_content').append('<p class="output">Dumping...</p>');
         Module.callMain([fileName]);
-        console.log("loaded: " + e);
       };
     })(file);
     //var blob = new Blob([typedArray], {type: 'application/octet-binary'});
@@ -56,6 +52,8 @@ $(function() {
   }
 
   var readSelectedFiles = function(files) {
+    $('#main_content p.output').remove();
+    $('#main_content').append('<p class="output">Reading...</p>');
     $.each(files, function(index,file) {
       readFile(file);
     });
@@ -104,30 +102,46 @@ $(function() {
 
   }
 
+  function handleDragEnter(evt) {
+    evt.stopPropagation();
+    evt.preventDefault();
+    evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+    evt.target.innerHTML = 'Drop DICOM files here';
+  }
+
   function handleDragOver(evt) {
     evt.stopPropagation();
     evt.preventDefault();
     evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+    evt.target.innerHTML = 'Drop DICOM files here!';
+  }
+
+  function handleDragLeave(evt) {
+    evt.stopPropagation();
+    evt.preventDefault();
+    evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+    evt.target.innerHTML = 'Drop DICOM files here';
   }
 
   // Setup the dnd listeners.
   var dropZone = document.getElementById('fileDropZone');
+  dropZone.addEventListener('dragenter', handleDragEnter, false);
   dropZone.addEventListener('dragover', handleDragOver, false);
+  dropZone.addEventListener('dragleave', handleDragLeave, false);
   dropZone.addEventListener('drop', handleFileDrop, false);
 
   /*
     Override print
   */
   var printToMainContext = function(s) {
-    $('#main_content').append('<p>' + s + '</p>');
+    $('#main_content').append('<p class="output">' + s + '</p>');
   };
   Module.print = printToMainContext;
 
   /*
     Clean up and start
   */
-  $('#main_content p').remove();
-  console.log('starting');
+  $('#main_content p.output').remove();
 });
 
     </script>
@@ -148,14 +162,17 @@ $(function() {
   <section id="main_content">
 
     <!-- File selector -->
+    <p>Browse for DICOM files:</p>
     <input type="file" id="fileSelector" name="selectorFiles[]" multiple />
     <output id="fileSelectorOutput"></output>
 
+    <p>Or</p>
+
     <!-- Drag and Drop -->
-    <div id="fileDropZone">Drop DICOM files here</div>
+    <div id="fileDropZone" style="padding:5px;border: 1px dashed">Drop DICOM files here</div>
     <output id="fileDropOutput"></output>
 
-    <p>Waiting...</p>
+    <p class='output'>Waiting...</p>
 
   </section>
 </div>
