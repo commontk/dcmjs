@@ -21,9 +21,7 @@ $(function() {
   // Check for the various File API support.
   if (window.File && window.FileReader && window.FileList && window.Blob) {
     // Great success! All the File APIs are supported.
-    <!-- 
-    console.log('The File APIs ARE not fully supported in this browser.');
-    -->
+    console.log('The File APIs ARE fully supported in this browser.');
   } else {
     alert('The File APIs are not fully supported in this browser.');
   }
@@ -38,14 +36,23 @@ $(function() {
     // Closure to capture the file information.
     reader.onload = (function(file) {
       return function(e) {
+        var fileName = '/uploadedfile.dcm';
         console.log(e);
+
+        var content = new Int8Array(reader.result);
+        var blob = new Blob([content], { type: 'application/octet-binary' });
+        console.log(content);
+        console.log(blob);
+        FS.writeFile(fileName, content, {encoding: "binary"});
+
+        Module.callMain([fileName]);
+        console.log("loaded: " + e);
       };
     })(file);
+    //var blob = new Blob([typedArray], {type: 'application/octet-binary'});
+    // Read in the image file 
+    reader.readAsArrayBuffer(file);
 
-    // Read in the image file as a data URL.
-    reader.readAsDataURL(file);
-
-    //Module.callMain(['f.dcm']);
   };
 
   var readSelectedFiles = function(files) {
