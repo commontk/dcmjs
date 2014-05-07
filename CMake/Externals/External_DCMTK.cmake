@@ -19,7 +19,7 @@ endif()
 if(NOT DEFINED DCMTK_DIR AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
 
   set(${proj}_REPOSITORY ${git_protocol}://github.com/jcfr/DCMTK)
-  set(${proj}_GIT_TAG "6297448949f0ca0fa253c660b5672bf2f59e4e21")
+  set(${proj}_GIT_TAG "7ef3b94093fe5fbef8b19ba0c2aabb9ed22af054")
   
   ExternalProject_Add(${proj}
     ${${proj}_EP_ARGS}
@@ -52,6 +52,7 @@ if(NOT DEFINED DCMTK_DIR AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
       -DHAVE__FINDFIRST:BOOL=0
       -DGXX_SUPPORTS_VISIBILITY:BOOL=0
       -DSIZEOF_VOID_P:STRING=4
+      -DDCMJS_PREJS_SCRIPT:FILEPATH=${CMAKE_SOURCE_DIR}/javascripts/pre.js
     INSTALL_COMMAND ""
     DEPENDS
       ${${proj}_DEPENDENCIES}
