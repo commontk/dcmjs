@@ -9,19 +9,20 @@
 
     <script src="../javascripts/jquery-1.10.2.js"></script>
     <script src="../javascripts/dcmdump.js"></script>
-    
+
     <script>
+
 
 $(function() {
 
   /*
-    File management 
+    File management
         http://www.html5rocks.com/en/tutorials/file/dndfiles/
   */
   // Check for the various File API support.
   if (window.File && window.FileReader && window.FileList && window.Blob) {
     // Great success! All the File APIs are supported.
-    console.log('The File APIs ARE fully supported in this browser.');
+    //console.log('The File APIs ARE fully supported in this browser.');
   } else {
     alert('The File APIs are not fully supported in this browser.');
   }
@@ -50,22 +51,19 @@ $(function() {
       };
     })(file);
     //var blob = new Blob([typedArray], {type: 'application/octet-binary'});
-    // Read in the image file 
+    // Read in the image file
     reader.readAsArrayBuffer(file);
-
-  };
+  }
 
   var readSelectedFiles = function(files) {
     $.each(files, function(index,file) {
       readFile(file);
     });
-  };
+  }
 
   // File selector
   function handleFileSelect(evt) {
     var files = evt.target.files; // FileList object
-
-    readSelectedFiles(files);
 
     // files is a FileList of File objects. List some properties.
     var output = [];
@@ -75,10 +73,13 @@ $(function() {
                   f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a',
                   '</li>');
     }
-    document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
-  }
 
-  document.getElementById('files').addEventListener('change', handleFileSelect, false);
+    $('#fileSelectorOutput').innerHTML = '<ul>' + output.join('') + '</ul>';
+
+    // do the actual dumping
+    readSelectedFiles(files);
+  }
+  document.getElementById('fileSelector').addEventListener('change', handleFileSelect, false);
 
 
   // Drag and Drop
@@ -88,8 +89,6 @@ $(function() {
 
     var files = evt.dataTransfer.files; // FileList object.
 
-    readSelectedFiles(files);
-
     // files is a FileList of File objects. List some properties.
     var output = [];
     for (var i = 0, f; f = files[i]; i++) {
@@ -98,7 +97,11 @@ $(function() {
                   f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a',
                   '</li>');
     }
-    document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
+    $('#fileDropOutput').innerHTML = '<ul>' + output.join('') + '</ul>';
+
+    // do the actual dumping
+    readSelectedFiles(files);
+
   }
 
   function handleDragOver(evt) {
@@ -108,7 +111,7 @@ $(function() {
   }
 
   // Setup the dnd listeners.
-  var dropZone = document.getElementById('drop_zone');
+  var dropZone = document.getElementById('fileDropZone');
   dropZone.addEventListener('dragover', handleDragOver, false);
   dropZone.addEventListener('drop', handleFileDrop, false);
 
@@ -145,14 +148,14 @@ $(function() {
   <section id="main_content">
 
     <!-- File selector -->
-    <input type="file" id="files" name="files[]" multiple />
-    <output id="list"></output>
+    <input type="file" id="fileSelector" name="selectorFiles[]" multiple />
+    <output id="fileSelectorOutput"></output>
 
     <!-- Drag and Drop -->
-    <div id="drop_zone">Drop DICOM files here</div>
-    <output id="list"></output>
+    <div id="fileDropZone">Drop DICOM files here</div>
+    <output id="fileDropOutput"></output>
 
-    <p>Working...</p>
+    <p>Waiting...</p>
 
   </section>
 </div>
