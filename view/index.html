@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+    <link rel="stylesheet" type="text/css" href="../stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="../stylesheets/pygment_trac.css" media="screen" />
+
+    <script src="../javascripts/jquery-1.10.2.js"></script>
+    <script src="../javascripts/dcm2pnm.js"></script>
+
+    <script>
+
+$(function() {
+
+  /*
+    File management
+        http://www.html5rocks.com/en/tutorials/file/dndfiles/
+  */
+  // Check for the various File API support.
+  if (window.File && window.FileReader && window.FileList && window.Blob) {
+    // Great success! All the File APIs are supported.
+    //console.log('The File APIs ARE fully supported in this browser.');
+  } else {
+    alert('The File APIs are not fully supported in this browser.');
+  }
+
+  /*
+    Read the files and invoke dcmdump
+  */
+  var readFile = function(file) {
+    var reader = new FileReader();
+
+    // Closure to capture the file information.
+    reader.onload = (function(file) {
+      return function(e) {
+        var uploadedFilePath = '/uploadedfile.dcm';
+
+        $('#main_content').append('<p class="output">Writing...</p>');
+        var content = new Int8Array(reader.result);
+        FS.writeFile(uploadedFilePath, content, {encoding: "binary"});
+
+        var imageFilePath = 'convertedImage';
+
+        $('#main_content').append('<p class="output">Dumping...</p>');
+        //Module.callMain(['--verbose', '--histogram-window', '2', '--all-frames', '--write-png', uploadedFilePath, '/images/image']);
+        //Module.callMain(['--verbose', '--histogram-window', '2', '--write-png', uploadedFilePath, '/images/image.png']);
+
+        Module.callMain(['--verbose', '--histogram-window', '2', '--frame', '1', '--write-raw-pnm', uploadedFilePath, imageFilePath]);
+
+        $('#main_content').append('<p class="output">%s</p>'.replace('%s', String(imageFilePath)));
+        var stat = FS.stat(imageFilePath);
+        var stream = FS.open(imageFilePath);
+        var pnmBuffer = new Uint8Array(stat.size);
+        FS.read(stream, pnmBuffer,0,stat.size);
+        FS.close(stream);
+        $('#main_content').append('<p class="output">%s</p>'.replace('%s', String(stat.size)));
+
+        var canvas = document.getElementById('imageViewCanvas');
+        var canvasWidth  = canvas.width;
+        var canvasHeight = canvas.height;
+        var ctx = canvas.getContext('2d');
+        var imageData = ctx.getImageData(0,0,canvasWidth,canvasHeight);
+        var data = imageData.data;
+
+        for (var y = 0; y < canvasHeight; ++y) {
+            for (var x = 0; x < canvasWidth; ++x) {
+                var index = (y * canvasWidth + x) * 4;
+
+                var value = pnmBuffer[x + y*canvasWidth];
+
+                data[index]   = value;    // red
+                data[++index] = value;    // green
+                data[++index] = value;    // blue
+                data[++index] = 255;      // alpha
+            }
+        }
+        ctx.putImageData(imageData, 0, 0);
+
+
+      };
+    })(file);
+    //var blob = new Blob([typedArray], {type: 'application/octet-binary'});
+    // Read in the image file
+    reader.readAsArrayBuffer(file);
+  }
+
+
+  var readSelectedFiles = function(files) {
+    $('#main_content p.output').remove();
+    $('#main_content').append('<p class="output">Reading...</p>');
+    $.each(files, function(index,file) {
+      readFile(file);
+    });
+  }
+
+  // File selector
+  function handleFileSelect(evt) {
+    var files = evt.target.files; // FileList object
+
+    // files is a FileList of File objects. List some properties.
+    var output = [];
+    for (var i = 0, f; f = files[i]; i++) {
+      output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
+                  f.size, ' bytes, last modified: ',
+                  f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a',
+                  '</li>');
+    }
+
+    $('#fileSelectorOutput').innerHTML = '<ul>' + output.join('') + '</ul>';
+
+    // do the actual dumping
+    readSelectedFiles(files);
+  }
+  document.getElementById('fileSelector').addEventListener('change', handleFileSelect, false);
+
+
+  // Drag and Drop
+  function handleFileDrop(evt) {
+    evt.stopPropagation();
+    evt.preventDefault();
+
+    var files = evt.dataTransfer.files; // FileList object.
+
+    // files is a FileList of File objects. List some properties.
+    var output = [];
+    for (var i = 0, f; f = files[i]; i++) {
+      output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
+                  f.size, ' bytes, last modified: ',
+                  f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a',
+                  '</li>');
+    }
+    $('#fileDropOutput').innerHTML = '<ul>' + output.join('') + '</ul>';
+
+    // do the actual dumping
+    readSelectedFiles(files);
+
+  }
+
+  function handleDragEnter(evt) {
+    evt.stopPropagation();
+    evt.preventDefault();
+    evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+    evt.target.innerHTML = 'Drop DICOM files here';
+  }
+
+  function handleDragOver(evt) {
+    evt.stopPropagation();
+    evt.preventDefault();
+    evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+    evt.target.innerHTML = 'Drop DICOM files here!';
+  }
+
+  function handleDragLeave(evt) {
+    evt.stopPropagation();
+    evt.preventDefault();
+    evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+    evt.target.innerHTML = 'Drop DICOM files here';
+  }
+
+  // Setup the dnd listeners.
+  var dropZone = document.getElementById('fileDropZone');
+  dropZone.addEventListener('dragenter', handleDragEnter, false);
+  dropZone.addEventListener('dragover', handleDragOver, false);
+  dropZone.addEventListener('dragleave', handleDragLeave, false);
+  dropZone.addEventListener('drop', handleFileDrop, false);
+
+  /*
+    Override print
+  */
+  var printToMainContext = function(s) {
+    $('#main_content').append('<p class="output">' + s + '</p>');
+  };
+  Module.print = printToMainContext;
+
+  /*
+    Clean up and start
+  */
+  $('#main_content p.output').remove();
+});
+
+    </script>
+
+    <title>dcmjs by commontk</title>
+  </head>
+
+  <body>
+
+<header>
+  <div class="container">
+    <h1>dcmjs view</h1>
+    <h2>View the pixel data of a dicom file using dcmjs</h2>
+  </div>
+</header>
+
+<div class="container">
+  <section id="main_content">
+
+    <!-- File selector -->
+    <p>Browse for DICOM files:</p>
+    <input type="file" id="fileSelector" name="selectorFiles[]" multiple />
+    <output id="fileSelectorOutput"></output>
+
+    <p>Or</p>
+
+    <!-- Drag and Drop -->
+    <div id="fileDropZone" style="padding:5px;border: 1px dashed">Drop DICOM files here</div>
+    <output id="fileDropOutput"></output>
+
+    <p class='output'>Waiting...</p>
+
+    <canvas id="imageViewCanvas" height="256" width="256"></canvas>
+
+  </section>
+</div>
+
+
+
+<!-- google analytics -->
+<script type="text/javascript">
+  var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+  document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+  try {
+    var pageTracker = _gat._getTracker("UA-50750505-1");
+  pageTracker._trackPageview();
+  } catch(err) {}
+</script>
+
+  </body>
+</html>
