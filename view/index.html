@@ -35,6 +35,7 @@ $(function() {
     // Closure to capture the file information.
     reader.onload = (function(file) {
       return function(e) {
+        var fileName = file.name;
         var uploadedFilePath = '/uploadedfile.dcm';
 
         $('#main_content').append('<p class="output">Writing...</p>');
@@ -48,6 +49,8 @@ $(function() {
         //Module.callMain(['--verbose', '--histogram-window', '2', '--write-png', uploadedFilePath, '/images/image.png']);
 
         Module.callMain(['--verbose', '--histogram-window', '2', '--frame', '1', '--write-raw-pnm', uploadedFilePath, imageFilePath]);
+        $('#viewContainer canvas').remove();
+        $('#viewContainer').append('<canvas id="%s"></canvas>'.replace('%s',fileName));
 
         $('#main_content').append('<p class="output">%s</p>'.replace('%s', String(imageFilePath)));
         var stat = FS.stat(imageFilePath);
@@ -57,7 +60,30 @@ $(function() {
         FS.close(stream);
         $('#main_content').append('<p class="output">%s</p>'.replace('%s', String(stat.size)));
 
-        var canvas = document.getElementById('imageViewCanvas');
+        var widthString = "";
+        var heightString = "";
+        var passedSpace = false;
+        var offset;
+        for (offset = 3; offset < stat.size; offset++) {
+          if (pnmBuffer[offset] == 10) {
+            break;
+          }
+          if (pnmBuffer[offset] == 32) {
+            passedSpace = true;
+            continue;
+          }
+          if (passedSpace) {
+            heightString += String(pnmBuffer[offset] - 48);
+          } else {
+            widthString += String(pnmBuffer[offset] - 48);
+          }
+        }
+        console.log(widthString);
+        console.log(heightString);
+
+        var canvas = document.getElementById(fileName);
+        canvas.width = eval(widthString);
+        canvas.height = eval(heightString);
         var canvasWidth  = canvas.width;
         var canvasHeight = canvas.height;
         var ctx = canvas.getContext('2d');
@@ -210,7 +236,7 @@ $(function() {
 
     <p class='output'>Waiting...</p>
 
-    <canvas id="imageViewCanvas" height="256" width="256"></canvas>
+    <div id='viewContainer'></div>
 
   </section>
 </div>
