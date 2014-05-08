@@ -20,7 +20,7 @@
 
 cmake_minimum_required(VERSION 2.8.12)
 
-project(dcmjs)
+project(dcmjs NONE)
 
 #-----------------------------------------------------------------------------
 # Superbuild
@@ -55,6 +55,17 @@ endif()
 #------------------------------------------------------------------------------
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-warn-absolute-paths -s ALLOW_MEMORY_GROWTH=1")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-warn-absolute-paths -s ALLOW_MEMORY_GROWTH=1")
+
+# Emscripten toolchain options
+set(EMSCRIPTEN_TOOLCHAIN_OPTIONS
+  -DCMAKE_MODULE_PATH:PATH=${EMSCRIPTEN_ROOT_PATH}/cmake/Modules
+  -DCMAKE_TOOLCHAIN_FILE:FILEPATH=${EMSCRIPTEN_ROOT_PATH}/cmake/Platform/Emscripten.cmake
+  -DCMAKE_CXX_COMPILER:FILEPATH=${EMSCRIPTEN_ROOT_PATH}/em++
+  -DCMAKE_CXX_FLAGS:STRING=${CMAKE_CXX_FLAGS}
+  -DCMAKE_C_COMPILER:FILEPATH=${EMSCRIPTEN_ROOT_PATH}/emcc
+  -DCMAKE_C_FLAGS:STRING=${CMAKE_C_FLAGS}
+  -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
+  )
 
 #------------------------------------------------------------------------------
 # Configure and build dcmjs
