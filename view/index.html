@@ -8,7 +8,7 @@
     <link rel="stylesheet" type="text/css" href="../stylesheets/pygment_trac.css" media="screen" />
 
     <script src="../javascripts/jquery-1.10.2.js"></script>
-    <script src="../javascripts/dcm2pnm.js"></script>
+    <script src="../javascripts/dcmjs.js"></script>
 
     <script>
 
@@ -45,10 +45,10 @@ $(function() {
         var imageFilePath = 'convertedImage';
 
         $('#main_content').append('<p class="output">Dumping...</p>');
-        //Module.callMain(['--verbose', '--histogram-window', '2', '--all-frames', '--write-png', uploadedFilePath, '/images/image']);
-        //Module.callMain(['--verbose', '--histogram-window', '2', '--write-png', uploadedFilePath, '/images/image.png']);
+        //Module.callMain(['dcm2pnm', '--verbose', '--histogram-window', '2', '--all-frames', '--write-png', uploadedFilePath, '/images/image']);
+        //Module.callMain(['dcm2pnm', '--verbose', '--histogram-window', '2', '--write-png', uploadedFilePath, '/images/image.png']);
 
-        Module.callMain(['--verbose', '--histogram-window', '2', '--frame', '1', '--write-raw-pnm', uploadedFilePath, imageFilePath]);
+        Module.callMain(['dcm2pnm', '--verbose', '--histogram-window', '2', '--frame', '1', '--write-raw-pnm', uploadedFilePath, imageFilePath]);
         $('#viewContainer canvas').remove();
         $('#viewContainer').append('<canvas id="%s"></canvas>'.replace('%s',fileName));
 

@@ -8,7 +8,7 @@
     <link rel="stylesheet" type="text/css" href="../stylesheets/pygment_trac.css" media="screen" />
 
     <script src="../javascripts/jquery-1.10.2.js"></script>
-    <script src="../javascripts/dcmdump.js"></script>
+    <script src="../javascripts/dcmjs.js"></script>
 
     <script>
 
@@ -43,7 +43,7 @@ $(function() {
         FS.writeFile(fileName, content, {encoding: "binary"});
 
         $('#main_content').append('<p class="output">Dumping...</p>');
-        Module.callMain([fileName]);
+        Module.callMain(['dcmdump', fileName]);
       };
     })(file);
     //var blob = new Blob([typedArray], {type: 'application/octet-binary'});
