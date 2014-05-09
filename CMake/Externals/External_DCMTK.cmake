@@ -2,7 +2,7 @@
 set(proj DCMTK)
 
 # Set dependency list
-set(${proj}_DEPENDENCIES PNG ZLIB)
+set(${proj}_DEPENDENCIES PNG ZLIB LibXml2)
 
 # Include dependent projects if any
 ExternalProject_Include_Dependencies(${proj} PROJECT_VAR proj DEPENDS_VAR ${proj}_DEPENDENCIES)
@@ -19,7 +19,7 @@ endif()
 if(NOT DEFINED DCMTK_DIR AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
 
   set(${proj}_REPOSITORY ${git_protocol}://github.com/jcfr/DCMTK)
-  set(${proj}_GIT_TAG "31bd65b24d48ca2c7e7f7a066412e6eb6a51cce7")
+  set(${proj}_GIT_TAG "90aeb9d2f54208232b8ecb7331578a1ac862ed0b")
 
   ExternalProject_Add(${proj}
     ${${proj}_EP_ARGS}
@@ -39,7 +39,7 @@ if(NOT DEFINED DCMTK_DIR AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
       -DDCMTK_WITH_OPENSSL:BOOL=OFF
       -DDCMTK_WITH_PNG:BOOL=ON
       -DDCMTK_WITH_TIFF:BOOL=OFF
-      -DDCMTK_WITH_XML:BOOL=OFF
+      -DDCMTK_WITH_XML:BOOL=ON
       -DDCMTK_WITH_ICONV:BOOL=OFF
       -DDCMTK_WITH_THREADS:BOOL=OFF
       -DBUILD_TESTING:BOOL=OFF
@@ -52,7 +52,7 @@ if(NOT DEFINED DCMTK_DIR AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
       -DBUILD_dcmftest_APP:BOOL=ON
       -DBUILD_dcmgpdir_APP:BOOL=OFF
       -DBUILD_dump2dcm_APP:BOOL=OFF
-      -DBUILD_xml2dcm_APP:BOOL=OFF
+      -DBUILD_xml2dcm_APP:BOOL=ON
       -DBUILD_pdf2dcm_APP:BOOL=OFF
       -DBUILD_dcm2pdf_APP:BOOL=OFF
       -DBUILD_img2dcm_APP:BOOL=OFF
