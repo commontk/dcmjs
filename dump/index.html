@@ -9,23 +9,12 @@
 
     <script src="../javascripts/libs/jquery-1.10.2.js"></script>
     <script src="../javascripts/libs/dcmjs.js"></script>
+    <script src="../javascripts/utils.js"></script>
 
     <script>
 
 
 $(function() {
-
-  /*
-    File management
-        http://www.html5rocks.com/en/tutorials/file/dndfiles/
-  */
-  // Check for the various File API support.
-  if (window.File && window.FileReader && window.FileList && window.Blob) {
-    // Great success! All the File APIs are supported.
-    //console.log('The File APIs ARE fully supported in this browser.');
-  } else {
-    alert('The File APIs are not fully supported in this browser.');
-  }
 
   /*
     Read the files and invoke dcmdump
@@ -60,75 +49,34 @@ $(function() {
   }
 
   // File selector
-  function handleFileSelect(evt) {
+  function handleFileSelect(e) {
+    evt = e.originalEvent
     var files = evt.target.files; // FileList object
-
-    // files is a FileList of File objects. List some properties.
-    var output = [];
-    for (var i = 0, f; f = files[i]; i++) {
-      output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
-                  f.size, ' bytes, last modified: ',
-                  f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a',
-                  '</li>');
-    }
-
-    $('#fileSelectorOutput').innerHTML = '<ul>' + output.join('') + '</ul>';
-
-    // do the actual dumping
+    dcmjs.utils.displayFileProperties(files)
     readSelectedFiles(files);
   }
-  document.getElementById('fileSelector').addEventListener('change', handleFileSelect, false);
 
+  // Setup the file selector listener
+  $('#fileSelector').bind('change', handleFileSelect)
 
   // Drag and Drop
-  function handleFileDrop(evt) {
+  function handleFileDrop(e) {
+    evt = e.originalEvent
     evt.stopPropagation();
     evt.preventDefault();
 
-    var files = evt.dataTransfer.files; // FileList object.
-
-    // files is a FileList of File objects. List some properties.
-    var output = [];
-    for (var i = 0, f; f = files[i]; i++) {
-      output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
-                  f.size, ' bytes, last modified: ',
-                  f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a',
-                  '</li>');
-    }
-    $('#fileDropOutput').innerHTML = '<ul>' + output.join('') + '</ul>';
-
-    // do the actual dumping
+    var files = evt.dataTransfer.files; // FileList object
+    dcmjs.utils.displayFileProperties(files)
     readSelectedFiles(files);
-
   }
 
-  function handleDragEnter(evt) {
-    evt.stopPropagation();
-    evt.preventDefault();
-    evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
-    evt.target.innerHTML = 'Drop DICOM files here';
+  // Setup the dnd listeners
+  function ignoreDrag(e) {
+    e.originalEvent.stopPropagation();
+    e.originalEvent.preventDefault();
+    e.originalEvent.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
   }
-
-  function handleDragOver(evt) {
-    evt.stopPropagation();
-    evt.preventDefault();
-    evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
-    evt.target.innerHTML = 'Drop DICOM files here!';
-  }
-
-  function handleDragLeave(evt) {
-    evt.stopPropagation();
-    evt.preventDefault();
-    evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
-    evt.target.innerHTML = 'Drop DICOM files here';
-  }
-
-  // Setup the dnd listeners.
-  var dropZone = document.getElementById('fileDropZone');
-  dropZone.addEventListener('dragenter', handleDragEnter, false);
-  dropZone.addEventListener('dragover', handleDragOver, false);
-  dropZone.addEventListener('dragleave', handleDragLeave, false);
-  dropZone.addEventListener('drop', handleFileDrop, false);
+  $('#fileDropZone').bind('dragenter', ignoreDrag).bind('dragover', ignoreDrag).bind('drop', handleFileDrop);
 
   /*
     Override print
@@ -169,8 +117,11 @@ $(function() {
     <p>Or</p>
 
     <!-- Drag and Drop -->
-    <div id="fileDropZone" style="padding:5px;border: 1px dashed">Drop DICOM files here</div>
-    <output id="fileDropOutput"></output>
+    <div class="files_wrapper">
+      <div class="area_file" id="fileDropZone">Drop your DICOM files here</div>
+    </div>
+
+    <output id="fileListProperties"></output>
 
     <p class='output'>Waiting...</p>
 
