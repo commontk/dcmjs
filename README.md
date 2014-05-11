@@ -43,7 +43,7 @@ parameters:
 [...]
 ```
 
-
+* Note that node executables do not have access to the local file system.  To use dcmjs on a browser see the demos in the gh-pages branch.
 
 Prerequisites
 -------------
