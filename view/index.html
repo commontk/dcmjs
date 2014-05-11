@@ -7,200 +7,130 @@
     <link rel="stylesheet" type="text/css" href="../stylesheets/stylesheet.css" media="screen" />
     <link rel="stylesheet" type="text/css" href="../stylesheets/pygment_trac.css" media="screen" />
 
-    <script src="../javascripts/jquery-1.10.2.js"></script>
-    <script src="../javascripts/dcmjs.js"></script>
+    <script src="../javascripts/libs/jquery-1.10.2.js"></script>
+    <script src="../javascripts/libs/dcmjs.js"></script>
+    <script src="../javascripts/utils.js"></script>
 
     <script>
-
 $(function() {
 
-  /*
-    File management
-        http://www.html5rocks.com/en/tutorials/file/dndfiles/
-  */
-  // Check for the various File API support.
-  if (window.File && window.FileReader && window.FileList && window.Blob) {
-    // Great success! All the File APIs are supported.
-    //console.log('The File APIs ARE fully supported in this browser.');
-  } else {
-    alert('The File APIs are not fully supported in this browser.');
-  }
+  var dcm2pnm = function(reader, file) {
+    var fileName = file.name;
+    var uploadedFilePath = '/uploadedfile.dcm';
 
-  /*
-    Read the files and invoke dcmdump
-  */
-  var readFile = function(file) {
-    var reader = new FileReader();
+    $('#main_content').append('<p class="output">Writing...</p>');
+    var content = new Int8Array(reader.result);
+    FS.writeFile(uploadedFilePath, content, {encoding: "binary"});
 
-    // Closure to capture the file information.
-    reader.onload = (function(file) {
-      return function(e) {
-        var fileName = file.name;
-        var uploadedFilePath = '/uploadedfile.dcm';
+    var imageFilePath = 'convertedImage';
 
-        $('#main_content').append('<p class="output">Writing...</p>');
-        var content = new Int8Array(reader.result);
-        FS.writeFile(uploadedFilePath, content, {encoding: "binary"});
+    $('#main_content').append('<p class="output">Dumping...</p>');
+    //Module.callMain(['dcm2pnm', '--verbose', '--histogram-window', '2', '--all-frames', '--write-png', uploadedFilePath, '/images/image']);
+    //Module.callMain(['dcm2pnm', '--verbose', '--histogram-window', '2', '--write-png', uploadedFilePath, '/images/image.png']);
 
-        var imageFilePath = 'convertedImage';
+    Module.callMain(['dcm2pnm', '--verbose', '--histogram-window', '2', '--frame', '1', '--write-raw-pnm', uploadedFilePath, imageFilePath]);
+    $('#viewContainer canvas').remove();
+    $('#viewContainer').append('<canvas id="%s"></canvas>'.replace('%s',fileName));
 
-        $('#main_content').append('<p class="output">Dumping...</p>');
-        //Module.callMain(['dcm2pnm', '--verbose', '--histogram-window', '2', '--all-frames', '--write-png', uploadedFilePath, '/images/image']);
-        //Module.callMain(['dcm2pnm', '--verbose', '--histogram-window', '2', '--write-png', uploadedFilePath, '/images/image.png']);
+    $('#main_content').append('<p class="output">%s</p>'.replace('%s', String(imageFilePath)));
+    var stat = FS.stat(imageFilePath);
+    var stream = FS.open(imageFilePath);
+    var pnmBuffer = new Uint8Array(stat.size);
+    FS.read(stream, pnmBuffer,0,stat.size);
+    FS.close(stream);
+    $('#main_content').append('<p class="output">%s</p>'.replace('%s', String(stat.size)));
 
-        Module.callMain(['dcm2pnm', '--verbose', '--histogram-window', '2', '--frame', '1', '--write-raw-pnm', uploadedFilePath, imageFilePath]);
-        $('#viewContainer canvas').remove();
-        $('#viewContainer').append('<canvas id="%s"></canvas>'.replace('%s',fileName));
+    var widthString = "";
+    var heightString = "";
+    var passedSpace = false;
+    var offset;
+    for (offset = 3; offset < stat.size; offset++) {
+      if (pnmBuffer[offset] == 10) {
+        break;
+      }
+      if (pnmBuffer[offset] == 32) {
+        passedSpace = true;
+        continue;
+      }
+      if (passedSpace) {
+        heightString += String(pnmBuffer[offset] - 48);
+      } else {
+        widthString += String(pnmBuffer[offset] - 48);
+      }
+    }
+    console.log(widthString);
+    console.log(heightString);
 
-        $('#main_content').append('<p class="output">%s</p>'.replace('%s', String(imageFilePath)));
-        var stat = FS.stat(imageFilePath);
-        var stream = FS.open(imageFilePath);
-        var pnmBuffer = new Uint8Array(stat.size);
-        FS.read(stream, pnmBuffer,0,stat.size);
-        FS.close(stream);
-        $('#main_content').append('<p class="output">%s</p>'.replace('%s', String(stat.size)));
+    var canvas = document.getElementById(fileName);
+    canvas.width = eval(widthString);
+    canvas.height = eval(heightString);
+    var canvasWidth  = canvas.width;
+    var canvasHeight = canvas.height;
+    var ctx = canvas.getContext('2d');
+    var imageData = ctx.getImageData(0,0,canvasWidth,canvasHeight);
+    var data = imageData.data;
+    var offset = stat.size - (canvasHeight * canvasWidth);
 
-        var widthString = "";
-        var heightString = "";
-        var passedSpace = false;
-        var offset;
-        for (offset = 3; offset < stat.size; offset++) {
-          if (pnmBuffer[offset] == 10) {
-            break;
-          }
-          if (pnmBuffer[offset] == 32) {
-            passedSpace = true;
-            continue;
-          }
-          if (passedSpace) {
-            heightString += String(pnmBuffer[offset] - 48);
-          } else {
-            widthString += String(pnmBuffer[offset] - 48);
-          }
+    for (var y = 0; y < canvasHeight; ++y) {
+        for (var x = 0; x < canvasWidth; ++x) {
+            var index = (y * canvasWidth + x) * 4;
+
+            var value = pnmBuffer[offset + x + y*canvasWidth];
+
+            data[index]   = value;    // red
+            data[++index] = value;    // green
+            data[++index] = value;    // blue
+            data[++index] = 255;      // alpha
         }
-        console.log(widthString);
-        console.log(heightString);
+    }
+    ctx.putImageData(imageData, 0, 0);
 
-        var canvas = document.getElementById(fileName);
-        canvas.width = eval(widthString);
-        canvas.height = eval(heightString);
-        var canvasWidth  = canvas.width;
-        var canvasHeight = canvas.height;
-        var ctx = canvas.getContext('2d');
-        var imageData = ctx.getImageData(0,0,canvasWidth,canvasHeight);
-        var data = imageData.data;
-        var offset = stat.size - (canvasHeight * canvasWidth);
-
-        for (var y = 0; y < canvasHeight; ++y) {
-            for (var x = 0; x < canvasWidth; ++x) {
-                var index = (y * canvasWidth + x) * 4;
-
-                var value = pnmBuffer[offset + x + y*canvasWidth];
-
-                data[index]   = value;    // red
-                data[++index] = value;    // green
-                data[++index] = value;    // blue
-                data[++index] = 255;      // alpha
-            }
-        }
-        ctx.putImageData(imageData, 0, 0);
-
-        // try the xml dump
-        var xmlFilePath = 'convertedImage.xml';
-        Module.callMain(['dcm2xml', '--verbose', '--native-format', uploadedFilePath, xmlFilePath]);
-        var xml = FS.readFile(xmlFilePath, {encoding: 'utf8'} );
-        var header = $.parseXML(xml);
-        console.log(header);
-        $('#main_content').append('<p class="output">%s</p>'.replace('%s', String(header)));
-
-      };
-    })(file);
-    //var blob = new Blob([typedArray], {type: 'application/octet-binary'});
-    // Read in the image file
-    reader.readAsArrayBuffer(file);
-
-
+    // try the xml dump
+    var xmlFilePath = 'convertedImage.xml';
+    Module.callMain(['dcm2xml', '--verbose', '--native-format', uploadedFilePath, xmlFilePath]);
+    var xml = FS.readFile(xmlFilePath, {encoding: 'utf8'} );
+    var header = $.parseXML(xml);
+    console.log(header);
+    $('#main_content').append('<p class="output">%s</p>'.replace('%s', String(header)));
   }
-
 
   var readSelectedFiles = function(files) {
     $('#main_content p.output').remove();
     $('#main_content').append('<p class="output">Reading...</p>');
     $.each(files, function(index,file) {
-      readFile(file);
+      dcmjs.utils.readFile(file, dcm2pnm);
     });
   }
 
   // File selector
-  function handleFileSelect(evt) {
+  function handleFileSelect(e) {
+    evt = e.originalEvent
     var files = evt.target.files; // FileList object
-
-    // files is a FileList of File objects. List some properties.
-    var output = [];
-    for (var i = 0, f; f = files[i]; i++) {
-      output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
-                  f.size, ' bytes, last modified: ',
-                  f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a',
-                  '</li>');
-    }
-
-    $('#fileSelectorOutput').innerHTML = '<ul>' + output.join('') + '</ul>';
-
-    // do the actual dumping
+    dcmjs.utils.displayFileProperties(files)
     readSelectedFiles(files);
   }
-  document.getElementById('fileSelector').addEventListener('change', handleFileSelect, false);
 
+  // Setup the file selector listener
+  $('#fileSelector').bind('change', handleFileSelect)
 
   // Drag and Drop
-  function handleFileDrop(evt) {
+  function handleFileDrop(e) {
+    evt = e.originalEvent
     evt.stopPropagation();
     evt.preventDefault();
 
-    var files = evt.dataTransfer.files; // FileList object.
-
-    // files is a FileList of File objects. List some properties.
-    var output = [];
-    for (var i = 0, f; f = files[i]; i++) {
-      output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
-                  f.size, ' bytes, last modified: ',
-                  f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a',
-                  '</li>');
-    }
-    $('#fileDropOutput').innerHTML = '<ul>' + output.join('') + '</ul>';
-
-    // do the actual dumping
+    var files = evt.dataTransfer.files; // FileList object
+    dcmjs.utils.displayFileProperties(files)
     readSelectedFiles(files);
-
   }
 
-  function handleDragEnter(evt) {
-    evt.stopPropagation();
-    evt.preventDefault();
-    evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
-    evt.target.innerHTML = 'Drop DICOM files here';
+  // Setup the dnd listeners
+  function ignoreDrag(e) {
+    e.originalEvent.stopPropagation();
+    e.originalEvent.preventDefault();
+    e.originalEvent.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
   }
-
-  function handleDragOver(evt) {
-    evt.stopPropagation();
-    evt.preventDefault();
-    evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
-    evt.target.innerHTML = 'Drop DICOM files here!';
-  }
-
-  function handleDragLeave(evt) {
-    evt.stopPropagation();
-    evt.preventDefault();
-    evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
-    evt.target.innerHTML = 'Drop DICOM files here';
-  }
-
-  // Setup the dnd listeners.
-  var dropZone = document.getElementById('fileDropZone');
-  dropZone.addEventListener('dragenter', handleDragEnter, false);
-  dropZone.addEventListener('dragover', handleDragOver, false);
-  dropZone.addEventListener('dragleave', handleDragLeave, false);
-  dropZone.addEventListener('drop', handleFileDrop, false);
+  $('#fileDropZone').bind('dragenter', ignoreDrag).bind('dragover', ignoreDrag).bind('drop', handleFileDrop);
 
   /*
     Override print
@@ -236,13 +166,15 @@ $(function() {
     <!-- File selector -->
     <p>Browse for DICOM files:</p>
     <input type="file" id="fileSelector" name="selectorFiles[]" multiple />
-    <output id="fileSelectorOutput"></output>
 
     <p>Or</p>
 
     <!-- Drag and Drop -->
-    <div id="fileDropZone" style="padding:5px;border: 1px dashed">Drop DICOM files here</div>
-    <output id="fileDropOutput"></output>
+    <div class="files_wrapper">
+      <div class="area_file" id="fileDropZone">Drop your DICOM files here</div>
+    </div>
+
+    <output id="fileListProperties"></output>
 
     <p class='output'>Waiting...</p>
 

@@ -232,6 +232,37 @@ a {
   text-shadow: 0 0 5px rgba(10, 10, 30, 0.5);
 }
 
+
+/* File drop area
+   files_wrapper, files_wrapper:hover, dcmarea_file, dcmarea_file:hover
+*/
+.files_wrapper {
+  margin-top: 5px;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid rgb(221,221,221);
+  transition: all 0.2s ease-in-out;
+  -webkit-transition: all 0.2s ease-in-out;
+  -moz-transition: all 0.2s ease-in-out;
+}
+
+.files_wrapper:hover {
+  background: #272727;
+  -moz-box-shadow: 0px 0px 3px black;
+  -webkit-box-shadow: 0px 0px 3px black;
+  box-shadow: 0px 0px 3px black;
+}
+
+.area_file {
+  border: 2px dashed rgb(221,221,221);
+  border-radius: 5px;
+  padding: 25px;
+  text-align: center;
+  font-size: 14px;
+}
+
+.area_file:hover { border: 2px solid white; }
+
 /* Clearfix */
 
 .cf:before, .cf:after {
