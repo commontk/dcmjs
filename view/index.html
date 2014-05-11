@@ -14,98 +14,82 @@
     <script>
 $(function() {
 
-  /*
-    Read the files and invoke dcmdump
-  */
-  var readFile = function(file) {
-    var reader = new FileReader();
+  var dcm2pnm = function(reader, file) {
+    var fileName = file.name;
+    var uploadedFilePath = '/uploadedfile.dcm';
 
-    // Closure to capture the file information.
-    reader.onload = (function(file) {
-      return function(e) {
-        var fileName = file.name;
-        var uploadedFilePath = '/uploadedfile.dcm';
+    $('#main_content').append('<p class="output">Writing...</p>');
+    var content = new Int8Array(reader.result);
+    FS.writeFile(uploadedFilePath, content, {encoding: "binary"});
 
-        $('#main_content').append('<p class="output">Writing...</p>');
-        var content = new Int8Array(reader.result);
-        FS.writeFile(uploadedFilePath, content, {encoding: "binary"});
+    var imageFilePath = 'convertedImage';
 
-        var imageFilePath = 'convertedImage';
+    $('#main_content').append('<p class="output">Dumping...</p>');
+    //Module.callMain(['dcm2pnm', '--verbose', '--histogram-window', '2', '--all-frames', '--write-png', uploadedFilePath, '/images/image']);
+    //Module.callMain(['dcm2pnm', '--verbose', '--histogram-window', '2', '--write-png', uploadedFilePath, '/images/image.png']);
 
-        $('#main_content').append('<p class="output">Dumping...</p>');
-        //Module.callMain(['dcm2pnm', '--verbose', '--histogram-window', '2', '--all-frames', '--write-png', uploadedFilePath, '/images/image']);
-        //Module.callMain(['dcm2pnm', '--verbose', '--histogram-window', '2', '--write-png', uploadedFilePath, '/images/image.png']);
+    Module.callMain(['dcm2pnm', '--verbose', '--histogram-window', '2', '--frame', '1', '--write-raw-pnm', uploadedFilePath, imageFilePath]);
+    $('#viewContainer canvas').remove();
+    $('#viewContainer').append('<canvas id="%s"></canvas>'.replace('%s',fileName));
 
-        Module.callMain(['dcm2pnm', '--verbose', '--histogram-window', '2', '--frame', '1', '--write-raw-pnm', uploadedFilePath, imageFilePath]);
-        $('#viewContainer canvas').remove();
-        $('#viewContainer').append('<canvas id="%s"></canvas>'.replace('%s',fileName));
+    $('#main_content').append('<p class="output">%s</p>'.replace('%s', String(imageFilePath)));
+    var stat = FS.stat(imageFilePath);
+    var stream = FS.open(imageFilePath);
+    var pnmBuffer = new Uint8Array(stat.size);
+    FS.read(stream, pnmBuffer,0,stat.size);
+    FS.close(stream);
+    $('#main_content').append('<p class="output">%s</p>'.replace('%s', String(stat.size)));
 
-        $('#main_content').append('<p class="output">%s</p>'.replace('%s', String(imageFilePath)));
-        var stat = FS.stat(imageFilePath);
-        var stream = FS.open(imageFilePath);
-        var pnmBuffer = new Uint8Array(stat.size);
-        FS.read(stream, pnmBuffer,0,stat.size);
-        FS.close(stream);
-        $('#main_content').append('<p class="output">%s</p>'.replace('%s', String(stat.size)));
+    var widthString = "";
+    var heightString = "";
+    var passedSpace = false;
+    var offset;
+    for (offset = 3; offset < stat.size; offset++) {
+      if (pnmBuffer[offset] == 10) {
+        break;
+      }
+      if (pnmBuffer[offset] == 32) {
+        passedSpace = true;
+        continue;
+      }
+      if (passedSpace) {
+        heightString += String(pnmBuffer[offset] - 48);
+      } else {
+        widthString += String(pnmBuffer[offset] - 48);
+      }
+    }
+    console.log(widthString);
+    console.log(heightString);
 
-        var widthString = "";
-        var heightString = "";
-        var passedSpace = false;
-        var offset;
-        for (offset = 3; offset < stat.size; offset++) {
-          if (pnmBuffer[offset] == 10) {
-            break;
-          }
-          if (pnmBuffer[offset] == 32) {
-            passedSpace = true;
-            continue;
-          }
-          if (passedSpace) {
-            heightString += String(pnmBuffer[offset] - 48);
-          } else {
-            widthString += String(pnmBuffer[offset] - 48);
-          }
+    var canvas = document.getElementById(fileName);
+    canvas.width = eval(widthString);
+    canvas.height = eval(heightString);
+    var canvasWidth  = canvas.width;
+    var canvasHeight = canvas.height;
+    var ctx = canvas.getContext('2d');
+    var imageData = ctx.getImageData(0,0,canvasWidth,canvasHeight);
+    var data = imageData.data;
+
+    for (var y = 0; y < canvasHeight; ++y) {
+        for (var x = 0; x < canvasWidth; ++x) {
+            var index = (y * canvasWidth + x) * 4;
+
+            var value = pnmBuffer[x + y*canvasWidth];
+
+            data[index]   = value;    // red
+            data[++index] = value;    // green
+            data[++index] = value;    // blue
+            data[++index] = 255;      // alpha
         }
-        console.log(widthString);
-        console.log(heightString);
-
-        var canvas = document.getElementById(fileName);
-        canvas.width = eval(widthString);
-        canvas.height = eval(heightString);
-        var canvasWidth  = canvas.width;
-        var canvasHeight = canvas.height;
-        var ctx = canvas.getContext('2d');
-        var imageData = ctx.getImageData(0,0,canvasWidth,canvasHeight);
-        var data = imageData.data;
-
-        for (var y = 0; y < canvasHeight; ++y) {
-            for (var x = 0; x < canvasWidth; ++x) {
-                var index = (y * canvasWidth + x) * 4;
-
-                var value = pnmBuffer[x + y*canvasWidth];
-
-                data[index]   = value;    // red
-                data[++index] = value;    // green
-                data[++index] = value;    // blue
-                data[++index] = 255;      // alpha
-            }
-        }
-        ctx.putImageData(imageData, 0, 0);
-
-
-      };
-    })(file);
-    //var blob = new Blob([typedArray], {type: 'application/octet-binary'});
-    // Read in the image file
-    reader.readAsArrayBuffer(file);
+    }
+    ctx.putImageData(imageData, 0, 0);
   }
-
 
   var readSelectedFiles = function(files) {
     $('#main_content p.output').remove();
     $('#main_content').append('<p class="output">Reading...</p>');
     $.each(files, function(index,file) {
-      readFile(file);
+      dcmjs.utils.readFile(file, dcm2pnm);
     });
   }
 

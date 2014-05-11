@@ -16,35 +16,22 @@
 
 $(function() {
 
-  /*
-    Read the files and invoke dcmdump
-  */
-  var readFile = function(file) {
-    var reader = new FileReader();
+  var dcmdump = function(reader, file) {
+    var fileName = '/uploadedfile.dcm';
 
-    // Closure to capture the file information.
-    reader.onload = (function(file) {
-      return function(e) {
-        var fileName = '/uploadedfile.dcm';
+    $('#main_content').append('<p class="output">Writing...</p>');
+    var content = new Int8Array(reader.result);
+    FS.writeFile(fileName, content, {encoding: "binary"});
 
-        $('#main_content').append('<p class="output">Writing...</p>');
-        var content = new Int8Array(reader.result);
-        FS.writeFile(fileName, content, {encoding: "binary"});
-
-        $('#main_content').append('<p class="output">Dumping...</p>');
-        Module.callMain(['dcmdump', fileName]);
-      };
-    })(file);
-    //var blob = new Blob([typedArray], {type: 'application/octet-binary'});
-    // Read in the image file
-    reader.readAsArrayBuffer(file);
+    $('#main_content').append('<p class="output">Dumping...</p>');
+    Module.callMain(['dcmdump', fileName]);
   }
 
   var readSelectedFiles = function(files) {
     $('#main_content p.output').remove();
     $('#main_content').append('<p class="output">Reading...</p>');
     $.each(files, function(index,file) {
-      readFile(file);
+      dcmjs.utils.readFile(file, dcmdump);
     });
   }
 

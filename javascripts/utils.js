@@ -1,6 +1,21 @@
 var dcmjs = dcmjs || {};
 dcmjs.utils = dcmjs.utils || {};
 
+/*
+  Read the file and invoke processor function
+*/
+dcmjs.utils.readFile = function(file, processor) {
+  var reader = new FileReader();
+
+  // Closure to capture the file information.
+  reader.onload = (function(file) {
+    return function(e) { processor(reader, file) };
+  })(file);
+  //var blob = new Blob([typedArray], {type: 'application/octet-binary'});
+  // Read in the image file
+  reader.readAsArrayBuffer(file);
+}
+
 dcmjs.utils.displayFileProperties = function(files) {
   // files is a FileList of File objects. List some properties.
   var output = [];
