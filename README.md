@@ -11,6 +11,7 @@ in a javascript environment.  Uses emscripten.
 
 See License.txt for information on using and contributing.
 
+* Note: to see javascript that uses dcmjs see [the gh-pages branch of this repository](https://github.com/commontk/dcmjs/tree/gh-pages) which is what hosts dcmjs.org.
 
 Usage
 -----
