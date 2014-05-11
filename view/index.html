@@ -89,12 +89,13 @@ $(function() {
         var ctx = canvas.getContext('2d');
         var imageData = ctx.getImageData(0,0,canvasWidth,canvasHeight);
         var data = imageData.data;
+        var offset = stat.size - (canvasHeight * canvasWidth);
 
         for (var y = 0; y < canvasHeight; ++y) {
             for (var x = 0; x < canvasWidth; ++x) {
                 var index = (y * canvasWidth + x) * 4;
 
-                var value = pnmBuffer[x + y*canvasWidth];
+                var value = pnmBuffer[offset + x + y*canvasWidth];
 
                 data[index]   = value;    // red
                 data[++index] = value;    // green
@@ -104,12 +105,21 @@ $(function() {
         }
         ctx.putImageData(imageData, 0, 0);
 
+        // try the xml dump
+        var xmlFilePath = 'convertedImage.xml';
+        Module.callMain(['dcm2xml', '--verbose', '--native-format', uploadedFilePath, xmlFilePath]);
+        var xml = FS.readFile(xmlFilePath, {encoding: 'utf8'} );
+        var header = $.parseXML(xml);
+        console.log(header);
+        $('#main_content').append('<p class="output">%s</p>'.replace('%s', String(header)));
 
       };
     })(file);
     //var blob = new Blob([typedArray], {type: 'application/octet-binary'});
     // Read in the image file
     reader.readAsArrayBuffer(file);
+
+
   }
 
 
