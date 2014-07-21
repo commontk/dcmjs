@@ -76,6 +76,10 @@ $ ls dcmjs-build/bin/
 dcmjs.js  dcmjs.js.gz
 ```
 
+Caveats
+-------
+The DCMTK build may find your system headers, so it's best not to have DCMTK installed on your build machine.  See https://github.com/commontk/dcmjs/issues/8.
+
 Add / Remove applications
 -------------------------
 
