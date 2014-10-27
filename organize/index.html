@@ -1,0 +1,182 @@
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+    <link rel="stylesheet" type="text/css" href="../stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="../stylesheets/pygment_trac.css" media="screen" />
+
+    <script src="../javascripts/libs/jquery-1.10.2.js"></script>
+    <script src="../javascripts/libs/dcmjs.js"></script>
+    <script src="../javascripts/utils.js"></script>
+
+<script>
+
+$(function() {
+
+  // creates an xml dump of a dicom file
+  var dcm2xml = function(reader, file) {
+    var fileName = file.name;
+    var uploadedFilePath = '/uploadedfile.dcm';
+
+    $('#main_content').append('<p class="output">Writing...</p>');
+    var content = new Int8Array(reader.result);
+    FS.writeFile(uploadedFilePath, content, {encoding: "binary"});
+
+    // try the xml dump
+    var xmlFilePath = 'convertedImage.xml';
+    Module.callMain(['dcm2xml', '--verbose', '--native-format', uploadedFilePath, xmlFilePath]);
+    var xml = FS.readFile(xmlFilePath, {encoding: 'utf8'} );
+    var header = $.parseXML(xml);
+    console.log(header);
+    $('#main_content').append('<p>Header</p>');
+    $('#main_content').append('<p class="output">%s</p>'.replace('%s', file.name));
+    $('#main_content').append('<p class="output">%s</p>'.replace('%s', String(header)));
+  }
+
+  var readSelectedFiles = function(files) {
+    $('#viewContainer canvas').remove();
+    $('#main_content p.output').remove();
+    $('#main_content').append('<p class="output">Reading...</p>');
+    $.each(files, function(index,file) {
+      dcmjs.utils.readFile(file, dcm2xml);
+    });
+  }
+
+  function fsErrorHandler(e) {
+      console.log('FileSystem API error code: ' + e.name);
+      console.log(e);
+  }
+
+  // File selector
+  function handleFileSelect(e) {
+    evt = e.originalEvent
+    var files = evt.target.files; // FileList object
+    dcmjs.utils.displayFileProperties(files)
+    readSelectedFiles(files);
+  }
+
+  // Recursive directory read, callback per File
+  function readEntry(entry,callback) {
+    if (entry.isFile) {
+      console.log('callback for ', entry);
+      entry.file(callback, fsErrorHandler);
+    } else {
+      console.log('non-file entry', entry);
+      if (entry.createReader) {
+        var directoryReader = entry.createReader();
+        var entryHandler = function (results) {
+          if (results.length) {
+            $.each(results, function(index, entry) {
+              readEntry(entry,callback);
+            });
+            directoryReader.readEntries(entryHandler, fsErrorHandler);
+          }
+        };
+        directoryReader.readEntries(entryHandler, fsErrorHandler);
+      }
+    }
+  }
+
+  // Setup the file selector listener
+  $('#fileSelector').bind('change', handleFileSelect)
+
+  // Drag and Drop
+  function handleFileDrop(e) {
+    var evt = e.originalEvent;
+    evt.stopPropagation();
+    evt.preventDefault();
+
+    var length = evt.dataTransfer.items.length;
+    if (length > -1) {
+      // chrome-only transfer that can include dropped directories
+      for (var i = 0; i < length; i++) {
+        var entry = evt.dataTransfer.items[i].webkitGetAsEntry();
+        readEntry(entry, function(file) {
+          dcmjs.utils.readFile(file, dcm2xml);
+        });
+      }
+    } else {
+      // compatible file-based selection
+      var files = evt.dataTransfer.files; // FileList object
+      dcmjs.utils.displayFileProperties(files)
+      readSelectedFiles(files);
+    }
+  }
+
+  // Setup the dnd listeners
+  function ignoreDrag(e) {
+    e.originalEvent.stopPropagation();
+    e.originalEvent.preventDefault();
+    e.originalEvent.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+  }
+  $('#fileDropZone').bind('dragenter', ignoreDrag).bind('dragover', ignoreDrag).bind('drop', handleFileDrop);
+
+  /*
+    Override print
+  */
+  var printToMainContext = function(s) {
+    $('#main_content').append('<p class="output">' + s + '</p>');
+  };
+  Module.print = printToMainContext;
+
+  /*
+    Clean up and start
+  */
+  $('#main_content p.output').remove();
+});
+
+</script>
+
+    <title>dcmjs by commontk</title>
+  </head>
+
+  <body>
+
+<header>
+  <div class="container">
+    <h1>dcmjs organize</h1>
+    <h2>Organize and anonymize dicom files in your browser (they are not sent to a server)</h2>
+  </div>
+</header>
+
+
+<div class="container">
+  <section id="main_content">
+
+    <!-- File selector -->
+    <p>Browse for DICOM files:</p>
+    <input type="file" id="fileSelector" name="selectorFiles[]" multiple />
+
+    <p>Or</p>
+
+    <!-- Drag and Drop -->
+    <div class="files_wrapper">
+      <div class="area_file" id="fileDropZone">Drop your DICOM files here</div>
+    </div>
+
+    <output id="fileListProperties"></output>
+
+    <p class='output'>Waiting...</p>
+
+    <div id='viewContainer'></div>
+
+  </section>
+</div>
+
+
+
+<!-- google analytics -->
+<script type="text/javascript">
+  var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+  document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+  try {
+    var pageTracker = _gat._getTracker("UA-50750505-1");
+  pageTracker._trackPageview();
+  } catch(err) {}
+</script>
+
+  </body>
+</html>
