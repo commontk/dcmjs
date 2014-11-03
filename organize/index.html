@@ -12,36 +12,65 @@
 
 <script>
 
+
 $(function() {
 
+  var print = function(s) {
+    $('#main_content').append('<p class="output">%s</p>'.replace('%s', s));
+  };
+
   // creates an xml dump of a dicom file
-  var dcm2xml = function(reader, file) {
+  var organize = function(reader, file) {
     var fileName = file.name;
-    var uploadedFilePath = '/uploadedfile.dcm';
+    var uploadedFilePath = '/uploadedFile.dcm';
+    var xmlFilePath = '/uploadedFile.xml';
+    var organizedXMLFilePath = '/organizedObject.xml';
+    var organizedDICOMFilePath = '/organizedObject.dcm';
 
     $('#main_content').append('<p class="output">Writing...</p>');
-    var content = new Int8Array(reader.result);
-    FS.writeFile(uploadedFilePath, content, {encoding: "binary"});
+    var uploadedObject = new Int8Array(reader.result);
+    FS.writeFile(uploadedFilePath, uploadedObject, {encoding: "binary"});
 
-    // try the xml dump
-    var xmlFilePath = 'convertedImage.xml';
-    Module.callMain(['dcm2xml', '--verbose', '--native-format', uploadedFilePath, xmlFilePath]);
-    var xml = FS.readFile(xmlFilePath, {encoding: 'utf8'} );
-    var header = $.parseXML(xml);
-    console.log(header);
-    $('#main_content').append('<p>Header</p>');
-    $('#main_content').append('<p class="output">%s</p>'.replace('%s', file.name));
-    $('#main_content').append('<p class="output">%s</p>'.replace('%s', String(header)));
+    // perform the xml dump
+    Module.callMain(['dcm2xml', uploadedFilePath, xmlFilePath]);
+    var xmlString = FS.readFile(xmlFilePath, {encoding: 'utf8'} );
+
+    // create the jquery dom of the dicom object
+    var dicomDOM = $.parseXML(xmlString);
+    var $dicomDOM = $(dicomDOM);
+
+    // manipulate the dom
+    print(file.name);
+    print($dicomDOM.find('[name=SOPInstanceUID]').text());
+    print($dicomDOM.find('[name=PatientName]').text());
+    $dicomDOM.find('[name=PatientName]').text("Nobody you would know");
+    window.$dicomDOM = $dicomDOM;
+
+    $('#main_content').append(''+
+    '<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA'+
+    'AAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO'+
+    '9TXL0Y4OHwAAAABJRU5ErkJggg==" alt="Red dot" />');
+
+    // write the new xml and covert it to dicom
+    var organizedObject = (new XMLSerializer()).serializeToString($dicomDOM[0]);
+    FS.writeFile(organizedXMLFilePath, organizedObject);
+
+    // perform the xml undump
+    Module.callMain(['xml2dcm', organizedXMLFilePath, organizedDICOMFilePath]);
+    var organizedObject = FS.readFile(organizedDICOMFilePath, {encoding: 'binary'} );
+
+    Module.callMain(['dcmdump', organizedDICOMFilePath]);
+
   }
 
+
+  // Used for file selection button or drop of file list
   var readSelectedFiles = function(files) {
-    $('#viewContainer canvas').remove();
-    $('#main_content p.output').remove();
-    $('#main_content').append('<p class="output">Reading...</p>');
     $.each(files, function(index,file) {
-      dcmjs.utils.readFile(file, dcm2xml);
+      dcmjs.utils.readFile(file, organize);
     });
   }
+
 
   function fsErrorHandler(e) {
       console.log('FileSystem API error code: ' + e.name);
@@ -52,17 +81,16 @@ $(function() {
   function handleFileSelect(e) {
     evt = e.originalEvent
     var files = evt.target.files; // FileList object
-    dcmjs.utils.displayFileProperties(files)
     readSelectedFiles(files);
   }
 
   // Recursive directory read, callback per File
   function readEntry(entry,callback) {
     if (entry.isFile) {
-      console.log('callback for ', entry);
+      console.log(entry);
+      $('#main_content').append('<p class="output">%s</p>'.replace('%s', String(entry.fullPath)));
       entry.file(callback, fsErrorHandler);
     } else {
-      console.log('non-file entry', entry);
       if (entry.createReader) {
         var directoryReader = entry.createReader();
         var entryHandler = function (results) {
@@ -87,19 +115,22 @@ $(function() {
     evt.stopPropagation();
     evt.preventDefault();
 
+    // Clean up any previous output
+    $('#main_content p.output').remove();
+
+    // handle the items or files
     var length = evt.dataTransfer.items.length;
     if (length > -1) {
       // chrome-only transfer that can include dropped directories
       for (var i = 0; i < length; i++) {
         var entry = evt.dataTransfer.items[i].webkitGetAsEntry();
         readEntry(entry, function(file) {
-          dcmjs.utils.readFile(file, dcm2xml);
+          dcmjs.utils.readFile(file, organize);
         });
       }
     } else {
       // compatible file-based selection
       var files = evt.dataTransfer.files; // FileList object
-      dcmjs.utils.displayFileProperties(files)
       readSelectedFiles(files);
     }
   }
@@ -112,18 +143,13 @@ $(function() {
   }
   $('#fileDropZone').bind('dragenter', ignoreDrag).bind('dragover', ignoreDrag).bind('drop', handleFileDrop);
 
-  /*
-    Override print
-  */
+  //  Override print so dcmjs commands will print to web page
   var printToMainContext = function(s) {
     $('#main_content').append('<p class="output">' + s + '</p>');
   };
   Module.print = printToMainContext;
 
-  /*
-    Clean up and start
-  */
-  $('#main_content p.output').remove();
+
 });
 
 </script>
@@ -141,6 +167,10 @@ $(function() {
 </header>
 
 
+
+<!-- 
+Main interface for data upload
+-->
 <div class="container">
   <section id="main_content">
 
