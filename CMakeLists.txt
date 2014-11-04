@@ -51,6 +51,16 @@ if ("${EMSCRIPTEN_ROOT_PATH}" STREQUAL "")
 	message(FATAL_ERROR "Could not locate the Emscripten compiler toolchain directory! Either set the EMSCRIPTEN environment variable, or pass -DEMSCRIPTEN_ROOT_PATH=xxx to CMake to explicitly specify the location of the compiler!")
 endif()
 
+# Check version
+set(EMSCRIPTEN_REQUIRED_VERSION 1.21.4)
+if(EXISTS ${EMSCRIPTEN_ROOT_PATH}/emscripten-version.txt)
+  file(READ ${EMSCRIPTEN_ROOT_PATH}/emscripten-version.txt EMSCRIPTEN_VERSION)
+  message(STATUS "Found Emscripten ${EMSCRIPTEN_REQUIRED_VERSION}")
+  if(EMSCRIPTEN_VERSION VERSION_LESS ${EMSCRIPTEN_REQUIRED_VERSION})
+    message(FATAL_ERROR "Emscripten >= ${EMSCRIPTEN_REQUIRED_VERSION}")
+  endif()
+endif()
+
 #------------------------------------------------------------------------------
 # Options
 #------------------------------------------------------------------------------
