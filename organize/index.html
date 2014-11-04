@@ -7,6 +7,7 @@
     <link rel="stylesheet" type="text/css" href="../stylesheets/pygment_trac.css" media="screen" />
 
     <script src="../javascripts/libs/jquery-1.10.2.js"></script>
+    <script src="../javascripts/libs/jszip.min.js"></script>
     <script src="../javascripts/libs/FileSaver.min.js"></script>
     <script src="../javascripts/libs/dcmjs.js"></script>
     <script src="../javascripts/utils.js"></script>
@@ -15,6 +16,8 @@
 
 
 $(function() {
+
+  var fileQueue = [];
 
   var print = function(s) {
     $('#main_content').append('<p class="output">%s</p>'.replace('%s', s));
@@ -44,6 +47,7 @@ $(function() {
     print(file.name);
     print($dicomDOM.find('[name=SOPInstanceUID]').text());
     print($dicomDOM.find('[name=PatientName]').text());
+    print($dicomDOM.find('[name=SeriesInstanceUID]').text());
     $dicomDOM.find('[name=PatientName]').text("Nobody you would know");
     window.$dicomDOM = $dicomDOM;
 
@@ -56,15 +60,66 @@ $(function() {
     var organizedObject = (new XMLSerializer()).serializeToString($dicomDOM[0]);
     FS.writeFile(organizedXMLFilePath, organizedObject);
 
+    var names = [ 'PatientName',
+                  'Modality',
+                  'StudyDescription',
+                  'StudyDate',
+                  'SeriesNumber',
+                  'SeriesDescription',
+                  'InstanceNumber'];
+    var valuesByName = {};
+
+    var findSpaces = new RegExp(' ', 'g');
+    $.each(names, function (index, name) {
+      var value = $dicomDOM.find('[name='+name+']').text();
+      value = value.replace(findSpaces, '_');
+      valuesByName[name] = encodeURIComponent(value);
+    })
+
+    var studyPath = '/' + valuesByName['PatientName'] + '-' +
+                   valuesByName['Modality'] + '-' +
+                   valuesByName['StudyID'] + '_' +
+                   valuesByName['StudyDescription'] + '-' +
+                   valuesByName['StudyDate'];
+    var instanceFilePath = studyPath + '/' + valuesByName['SeriesNumber'] + '_' +
+                       valuesByName['SeriesDescription'] + '-' +
+                       valuesByName['InstanceNumber'] + '.dcm';
+
+    print(instanceFilePath);
+    try {
+      FS.mkdir(studyPath);
+    }
+    catch(e) {
+      if (e.code !== 'EEXIST') {
+        print(e);
+      }
+    }
+    organizedDICOMFilePath = instanceFilePath;
+
     // perform the xml undump
     Module.callMain(['xml2dcm', organizedXMLFilePath, organizedDICOMFilePath]);
     var organizedObject = FS.readFile(organizedDICOMFilePath, {encoding: 'binary'} );
 
+    // debug download code
     Module.callMain(['dcmdump', organizedDICOMFilePath]);
 
-    var blob = new Blob([organizedObject], {type: 'application/dicom'});
-    saveAs(blob, "organized.dcm");
+    if (false) {
 
+      var blob = new Blob([organizedObject], {type: 'application/dicom'});
+      saveAs(blob, "organized.dcm");
+    }
+
+  }
+
+  var saveAsZip = function() {
+    var zip = new JSZip();
+    zip.file("Hello.txt", "Hello World\n");
+    var img = zip.folder("images");
+    //img.file("smile.gif", imgData, {base64: true});
+    img.file("smile.txt", "hoot", {base64: true});
+    var content = zip.generate({type:"blob"});
+    // see FileSaver.js
+    saveAs(content, "example.zip");
   }
 
 
@@ -73,6 +128,7 @@ $(function() {
     $.each(files, function(index,file) {
       dcmjs.utils.readFile(file, organize);
     });
+    saveAsZip();
   }
 
 
@@ -174,7 +230,7 @@ $(function() {
 
 
 
-<!-- 
+<!--
 Main interface for data upload
 -->
 <div class="container">
