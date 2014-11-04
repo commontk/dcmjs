@@ -47,9 +47,6 @@ if(DCMJS_PREJS_SCRIPT)
   em_link_pre_js(${PROJECT_NAME} ${DCMJS_PREJS_SCRIPT})
 endif()
 
-# Associated .js extension so that emscripten generate js code
-set_property(TARGET ${PROJECT_NAME} PROPERTY OUTPUT_NAME ${PROJECT_NAME}.js)
-
 # Compress .js
 find_program(GZIP_EXECUTABLE gzip)
 if(GZIP_EXECUTABLE)
