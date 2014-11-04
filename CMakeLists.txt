@@ -43,12 +43,12 @@ endif()
 
 # If not found by above search, locate using the EMSCRIPTEN environment variable.
 if ("${EMSCRIPTEN_ROOT_PATH}" STREQUAL "")
-	set(EMSCRIPTEN_ROOT_PATH "$ENV{EMSCRIPTEN}")
+  set(EMSCRIPTEN_ROOT_PATH "$ENV{EMSCRIPTEN}")
 endif()
 
 # Abort if not found. 
 if ("${EMSCRIPTEN_ROOT_PATH}" STREQUAL "")
-	message(FATAL_ERROR "Could not locate the Emscripten compiler toolchain directory! Either set the EMSCRIPTEN environment variable, or pass -DEMSCRIPTEN_ROOT_PATH=xxx to CMake to explicitly specify the location of the compiler!")
+  message(FATAL_ERROR "Could not locate the Emscripten compiler toolchain directory! Either set the EMSCRIPTEN environment variable, or pass -DEMSCRIPTEN_ROOT_PATH=xxx to CMake to explicitly specify the location of the compiler!")
 endif()
 
 # Check version
