@@ -11,6 +11,8 @@
     <script src="../javascripts/libs/FileSaver.min.js"></script>
     <script src="../javascripts/libs/dcmjs.js"></script>
     <script src="../javascripts/utils.js"></script>
+    <script src="mapconfig.js"></script>
+    <script src="sha1.js"></script>
 
 <script>
 
@@ -105,17 +107,21 @@ $(function() {
     // create the jquery dom of the dicom object
     var dicomDOM = $.parseXML(xmlString);
     var $dicomDOM = $(dicomDOM);
+    // read from old, write to new
+
+    // TODO: mapDom accepts mappingTable (list of lists - currently static list in mapconfig.js), and fullPath
+    // passing xmlString because I don't know how to simply clone $dicomDOM
+    var $newDicomDOM = mapDom($dicomDOM, xmlString);
 
     // manipulate the dom
     print(file.name);
-    print($dicomDOM.find('[name=SOPInstanceUID]').text());
-    print($dicomDOM.find('[name=PatientName]').text());
-    print($dicomDOM.find('[name=SeriesInstanceUID]').text());
-    $dicomDOM.find('[name=PatientName]').text("Nobody you would know");
-    window.$dicomDOM = $dicomDOM;
+    // print($dicomDOM.find('[name=SOPInstanceUID]').text());
+    // print($dicomDOM.find('[name=PatientName]').text());
+    // print($dicomDOM.find('[name=SeriesInstanceUID]').text());
+    // $dicomDOM.find('[name=PatientName]').text("Nobody you would know");
 
     // write the new xml and covert it to dicom
-    var organizedObject = (new XMLSerializer()).serializeToString($dicomDOM[0]);
+    var organizedObject = (new XMLSerializer()).serializeToString($newDicomDOM[0]);
     FS.writeFile(organizedXMLFilePath, organizedObject);
 
     // make a clean study path based on the contents of the file
@@ -131,12 +137,12 @@ $(function() {
     // replace spaces with underscores and other special chars with %xx uri code
     var findSpaces = new RegExp(' ', 'g');
     $.each(names, function (index, name) {
-      var value = $dicomDOM.find('[name='+name+']').text();
+      var value = $newDicomDOM.find('[name='+name+']').text();
       value = value.replace(findSpaces, '_');
       valuesByName[name] = encodeURIComponent(value);
     })
 
-    var studyPath = '/' + valuesByName['PatientName'] + '-' +
+    var studyPath = '/' + (valuesByName['PatientName'] || 'na') + '-' +
                    valuesByName['Modality'] + '-' +
                    valuesByName['StudyID'] + '_' +
                    valuesByName['StudyDescription'] + '-' +
