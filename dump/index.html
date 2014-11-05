@@ -24,7 +24,6 @@ $(function() {
     FS.writeFile(fileName, content, {encoding: "binary"});
 
     $('#main_content').append('<p class="output">Dumping...</p>');
-    Module.memoryInitializerPrefixURL = 'javascripts/libs/'
     Module.callMain(['dcmdump', fileName]);
   }
 
