@@ -27,7 +27,7 @@ $(function() {
     $('#main_content').append('<p class="output">Dumping...</p>');
     //Module.callMain(['dcm2pnm', '--verbose', '--histogram-window', '2', '--all-frames', '--write-png', uploadedFilePath, '/images/image']);
     //Module.callMain(['dcm2pnm', '--verbose', '--histogram-window', '2', '--write-png', uploadedFilePath, '/images/image.png']);
-    Module.memoryInitializerPrefixURL = 'dcmjs/javascripts/libs/'
+    Module.memoryInitializerPrefixURL = 'javascripts/libs/'
     Module.callMain(['dcm2pnm', '--verbose', '--histogram-window', '2', '--frame', '1', '--write-raw-pnm', uploadedFilePath, imageFilePath]);
     $('#viewContainer canvas').remove();
     $('#viewContainer').append('<canvas id="%s"></canvas>'.replace('%s',fileName));

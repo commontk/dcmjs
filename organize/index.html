@@ -72,6 +72,7 @@ $(function() {
     FS.writeFile(uploadedFilePath, uploadedObject, {encoding: "binary"});
 
     // perform the xml dump
+    Module.memoryInitializerPrefixURL = 'javascripts/libs/'
     file.name, Module.callMain(['dcm2xml', uploadedFilePath, xmlFilePath]);
     if (!fileExists(xmlFilePath)) {
       print ('no xml for' + file.name);
@@ -134,13 +135,14 @@ $(function() {
     organizedDICOMFilePath = instanceFilePath;
 
     // perform the xml undump
-    Module.memoryInitializerPrefixURL = 'dcmjs/javascripts/libs/'
+    Module.memoryInitializerPrefixURL = 'javascripts/libs/'
     Module.callMain(['xml2dcm', organizedXMLFilePath, organizedDICOMFilePath]);
     var organizedObject = FS.readFile(organizedDICOMFilePath, {encoding: 'binary'} );
 
     if (false) {
 
       // debug download code
+      Module.memoryInitializerPrefixURL = 'javascripts/libs/'
       Module.callMain(['dcmdump', organizedDICOMFilePath]);
 
 
