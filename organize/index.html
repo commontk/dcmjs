@@ -17,13 +17,21 @@
 
 $(function() {
 
+  // the current pending set of files, as in what was
+  // dropped or selected by the user (the input)
   var fileSet = new Set();
 
+  // a zip object in which to place the organized
+  // DICOM data (the output)
+  var zip = new JSZip();
+
+  // utility: todo: keep a log for optional download
   var print = function(s) {
     console.log(s);
     $('#main_content').append('<p class="output">%s</p>'.replace('%s', s));
   };
 
+  // utility: check path in virtual fs
   var fileExists = function(filePath) {
       try {
         FS.stat(filePath);
@@ -37,25 +45,8 @@ $(function() {
       return true;
   }
 
-  var finalizeFile = function(file) {
-    fileSet.delete(file);
-    print('file set size: ' + fileSet.size);
-    if (fileSet.size === 0) {
-      saveAsZip();
-    }
-  }
-
-
-  // creates an xml dump of a dicom file
-  var organize = function(reader, file) {
-    var fileName = file.name;
-    var uploadedFilePath = '/uploadedFile.dcm';
-    var xmlFilePath = '/uploadedFile.xml';
-    var organizedXMLFilePath = '/organizedObject.xml';
-    var organizedDICOMFilePath; // calculated later
-
-    // Delete anything left from previous runs
-    var filePaths = [uploadedFilePath, xmlFilePath, organizedXMLFilePath];
+  // utility: remove files in a file list (if they exist)
+  var deleteFiles = function(filePaths) {
     $.each(filePaths, function(index,filePath) {
       try {
         FS.unlink(filePath);
@@ -66,15 +57,46 @@ $(function() {
         }
       }
     });
+  }
+
+  // adds contents to zip object at specified path.
+  // removes file from input set.
+  // triggers zip creation and download when set is empty.
+  var finalizeFile = function(file, path, contents) {
+    fileSet.delete(file);
+    print('file set size: ' + fileSet.size);
+    if (path) {
+      zipContents = new Uint8Array(contents);
+      print('adding ' + path + "  of size " + zipContents.length);
+      zip.file(path, zipContents, {binary: true});
+    }
+    if (fileSet.size === 0) {
+      var content = zip.generate({type:"blob"});
+      // see FileSaver.js
+      saveAs(content, "organizedDICOM.zip");
+    }
+  }
+
+
+  // process one file from the input set.
+  var organize = function(reader, file) {
+    var fileName = file.name;
+    var uploadedFilePath = '/uploadedFile.dcm';
+    var xmlFilePath = '/uploadedFile.xml';
+    var organizedXMLFilePath = '/organizedObject.xml';
+    var organizedDICOMFilePath = '/organizedObject.dcm';
+
+    // Delete anything left from previous runs
+    deleteFiles([uploadedFilePath, xmlFilePath, organizedXMLFilePath, organizedDICOMFilePath]);
 
     print('Writing...');
     var uploadedObject = new Int8Array(reader.result);
     FS.writeFile(uploadedFilePath, uploadedObject, {encoding: "binary"});
 
     // perform the xml dump
-    file.name, Module.callMain(['dcm2xml', uploadedFilePath, xmlFilePath]);
+    file.name, Module.callMain(['dcm2xml', '--load-all', '--encode-base64', '--write-binary-data', uploadedFilePath, xmlFilePath]);
     if (!fileExists(xmlFilePath)) {
-      print ('no xml for' + file.name);
+      print ('skipping non-DICOM file because no xml generated for ' + file.name);
       finalizeFile(file);
       return;
     }
@@ -106,6 +128,7 @@ $(function() {
                   'InstanceNumber'];
     var valuesByName = {};
 
+    // replace spaces with underscores and other special chars with %xx uri code
     var findSpaces = new RegExp(' ', 'g');
     $.each(names, function (index, name) {
       var value = $dicomDOM.find('[name='+name+']').text();
@@ -122,20 +145,13 @@ $(function() {
                        valuesByName['SeriesDescription'] + '-' +
                        valuesByName['InstanceNumber'] + '.dcm';
 
-    print(instanceFilePath);
-    try {
-      FS.mkdir(studyPath);
-    }
-    catch(e) {
-      if (e.code !== 'EEXIST') {
-        print(e);
-      }
-    }
-    organizedDICOMFilePath = instanceFilePath;
 
     // perform the xml undump
     Module.callMain(['xml2dcm', organizedXMLFilePath, organizedDICOMFilePath]);
     var organizedObject = FS.readFile(organizedDICOMFilePath, {encoding: 'binary'} );
+
+    print(instanceFilePath + "  of size " + organizedObject.length);
+    finalizeFile(file, instanceFilePath, organizedObject);
 
     if (false) {
 
@@ -147,21 +163,8 @@ $(function() {
       saveAs(blob, "organized.dcm");
     }
 
-    finalizeFile(file);
 
   }
-
-  var saveAsZip = function() {
-    var zip = new JSZip();
-    zip.file("Hello.txt", "Hello World\n");
-    var img = zip.folder("images");
-    //img.file("smile.gif", imgData, {base64: true});
-    img.file("smile.txt", "hoot", {base64: true});
-    var content = zip.generate({type:"blob"});
-    // see FileSaver.js
-    saveAs(content, "example.zip");
-  }
-
 
   // Used for file selection button or drop of file list
   var readSelectedFiles = function(files) {
