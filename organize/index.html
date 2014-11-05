@@ -147,6 +147,7 @@ $(function() {
 
 
     // perform the xml undump
+    Module.memoryInitializerPrefixURL = 'dcmjs/javascripts/libs/'
     Module.callMain(['xml2dcm', organizedXMLFilePath, organizedDICOMFilePath]);
     var organizedObject = FS.readFile(organizedDICOMFilePath, {encoding: 'binary'} );
 
