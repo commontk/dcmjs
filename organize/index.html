@@ -17,11 +17,34 @@
 
 $(function() {
 
-  var fileQueue = [];
+  var fileSet = new Set();
 
   var print = function(s) {
+    console.log(s);
     $('#main_content').append('<p class="output">%s</p>'.replace('%s', s));
   };
+
+  var fileExists = function(filePath) {
+      try {
+        FS.stat(filePath);
+      }
+      catch(e) {
+        if (e.code !== 'ENOENT') {
+          print(e);
+        }
+        return false;
+      }
+      return true;
+  }
+
+  var finalizeFile = function(file) {
+    fileSet.delete(file);
+    print('file set size: ' + fileSet.size);
+    if (fileSet.size === 0) {
+      saveAsZip();
+    }
+  }
+
 
   // creates an xml dump of a dicom file
   var organize = function(reader, file) {
@@ -29,14 +52,32 @@ $(function() {
     var uploadedFilePath = '/uploadedFile.dcm';
     var xmlFilePath = '/uploadedFile.xml';
     var organizedXMLFilePath = '/organizedObject.xml';
-    var organizedDICOMFilePath = '/organizedObject.dcm';
+    var organizedDICOMFilePath; // calculated later
 
-    $('#main_content').append('<p class="output">Writing...</p>');
+    // Delete anything left from previous runs
+    var filePaths = [uploadedFilePath, xmlFilePath, organizedXMLFilePath];
+    $.each(filePaths, function(index,filePath) {
+      try {
+        FS.unlink(filePath);
+      }
+      catch(e) {
+        if (e.code !== 'ENOENT') {
+          print(e);
+        }
+      }
+    });
+
+    print('Writing...');
     var uploadedObject = new Int8Array(reader.result);
     FS.writeFile(uploadedFilePath, uploadedObject, {encoding: "binary"});
 
     // perform the xml dump
-    Module.callMain(['dcm2xml', uploadedFilePath, xmlFilePath]);
+    file.name, Module.callMain(['dcm2xml', uploadedFilePath, xmlFilePath]);
+    if (!fileExists(xmlFilePath)) {
+      print ('no xml for' + file.name);
+      finalizeFile(file);
+      return;
+    }
     var xmlString = FS.readFile(xmlFilePath, {encoding: 'utf8'} );
 
     // create the jquery dom of the dicom object
@@ -51,15 +92,11 @@ $(function() {
     $dicomDOM.find('[name=PatientName]').text("Nobody you would know");
     window.$dicomDOM = $dicomDOM;
 
-    $('#main_content').append(''+
-    '<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA'+
-    'AAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO'+
-    '9TXL0Y4OHwAAAABJRU5ErkJggg==" alt="Red dot" />');
-
     // write the new xml and covert it to dicom
     var organizedObject = (new XMLSerializer()).serializeToString($dicomDOM[0]);
     FS.writeFile(organizedXMLFilePath, organizedObject);
 
+    // make a clean study path based on the contents of the file
     var names = [ 'PatientName',
                   'Modality',
                   'StudyDescription',
@@ -100,14 +137,17 @@ $(function() {
     Module.callMain(['xml2dcm', organizedXMLFilePath, organizedDICOMFilePath]);
     var organizedObject = FS.readFile(organizedDICOMFilePath, {encoding: 'binary'} );
 
-    // debug download code
-    Module.callMain(['dcmdump', organizedDICOMFilePath]);
-
     if (false) {
+
+      // debug download code
+      Module.callMain(['dcmdump', organizedDICOMFilePath]);
+
 
       var blob = new Blob([organizedObject], {type: 'application/dicom'});
       saveAs(blob, "organized.dcm");
     }
+
+    finalizeFile(file);
 
   }
 
@@ -126,9 +166,9 @@ $(function() {
   // Used for file selection button or drop of file list
   var readSelectedFiles = function(files) {
     $.each(files, function(index,file) {
+      fileSet.add(file);
       dcmjs.utils.readFile(file, organize);
     });
-    saveAsZip();
   }
 
 
@@ -147,8 +187,10 @@ $(function() {
   // Recursive directory read, callback per File
   function readEntry(entry,callback) {
     if (entry.isFile) {
-      console.log(entry);
-      $('#main_content').append('<p class="output">%s</p>'.replace('%s', String(entry.fullPath)));
+      print(entry.fullPath);
+      if (entry.name.indexOf('.') === 0) {
+        print('ignoring ', entry.fullPath);
+      }
       entry.file(callback, fsErrorHandler);
     } else {
       if (entry.createReader) {
@@ -185,6 +227,7 @@ $(function() {
       for (var i = 0; i < length; i++) {
         var entry = evt.dataTransfer.items[i].webkitGetAsEntry();
         readEntry(entry, function(file) {
+          fileSet.add(file);
           dcmjs.utils.readFile(file, organize);
         });
       }
