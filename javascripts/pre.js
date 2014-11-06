@@ -1,11 +1,11 @@
 
 var ENVIRONMENT_IS_WEB = typeof window === 'object';
 
+var Module = Module || {};
+
 // See https://github.com/kripken/emscripten/wiki/Interacting-with-code
 if (ENVIRONMENT_IS_WEB)
   {
-  var Module = {
-    'noInitialRun' : 1,
-    'noExitRuntime' : 1,
-  };
+  Module['noInitialRun'] = 1;
+  Module['noExitRuntime'] = 1;
   }
