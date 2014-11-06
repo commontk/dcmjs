@@ -21,7 +21,7 @@ The module `dcmjs.js` allows to selectively execute a dcmtk application.
 * To list available application:
 
 ```
-$ (cd ./dcmjs-build/bin/; nodejs dcmjs.js list)
+$ nodejs ./dcmjs-build/bin/dcmjs.js list
 dcm2pnm
 dcmdump
 dcm2xml
@@ -32,7 +32,7 @@ dcmftest
 * To execute an application:
 
 ```
-$ (cd ./dcmjs-build/bin/; nodejs dcmjs.js dcmdump)
+$ nodejs ./dcmjs-build/bin/dcmjs.js dcmdump
 $dcmtk: dcmdump v3.6.1 DEV $
 
 dcmdump: Dump DICOM file and data set

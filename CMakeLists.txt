@@ -67,8 +67,8 @@ endif()
 #------------------------------------------------------------------------------
 set(CMAKE_C_COMPILER "${EMSCRIPTEN_ROOT_PATH}/emcc")
 set(CMAKE_CXX_COMPILER "${EMSCRIPTEN_ROOT_PATH}/em++")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-warn-absolute-paths -s ALLOW_MEMORY_GROWTH=1 -s ASSERTIONS=1")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-warn-absolute-paths -s ALLOW_MEMORY_GROWTH=1 -s ASSERTIONS=1")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-warn-absolute-paths -s ALLOW_MEMORY_GROWTH=1 -s ASSERTIONS=1 --memory-init-file 0")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-warn-absolute-paths -s ALLOW_MEMORY_GROWTH=1 -s ASSERTIONS=1 --memory-init-file 0")
 
 # Emscripten toolchain options
 set(EMSCRIPTEN_TOOLCHAIN_OPTIONS
