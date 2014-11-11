@@ -11,7 +11,12 @@ See                  [http://www.dcmjs.org](http://www.dcmjs.org)
 
 See License.txt for information on using and contributing.
 
-* Note: to see javascript that uses dcmjs see [the gh-pages branch of this repository](https://github.com/commontk/dcmjs/tree/gh-pages) which is what hosts dcmjs.org.
+<table>
+<tr><td>To see javascript that uses <code>dcmjs.js</code> see the
+<code>gh-pages</code> branch of
+<a href="https://github.com/commontk/dcmjs.org/tree/gh-pages">commontk/dcmjs.org</a> repository
+which is what hosts dcmjs.org.</td></tr>
+</table>
 
 Usage
 -----
