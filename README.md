@@ -1,45 +1,20 @@
+dcmjs
+=====
+
 Overview
 --------
 
 dcmjs is a javascript cross-compilation of dcmtk (dcmtk.org) for use
 in a javascript environment.  Uses emscripten.
 
-This repository has two branches:
-
-* `site`: source of the demo website hosted on [http://www.dcmjs.org](http://www.dcmjs.org)
-
-* `master`: build system allowing to generate `dcmjs.js` javascript module.
+See                  [http://www.dcmjs.org](http://www.dcmjs.org)
 
 See License.txt for information on using and contributing.
 
+* Note: to see javascript that uses dcmjs see [the gh-pages branch of this repository](https://github.com/commontk/dcmjs/tree/gh-pages) which is what hosts dcmjs.org.
 
-
-site: dcmjs.org website
------------------------
-
-### Source
-
-```
-git clone --branch site --single-branch git://github.com/commontk/dcmjs dcmjs.org
-```
-
-### Deploy
-
-```
-git clone --branch site --single-branch git://github.com/commontk/dcmjs dcmjs.org
-cd dcmjs.org
-./deploy.sh
-```
-
-### Caveats
-
-* `deploy.sh` should be executed from the site source directory.
-
-
-master: dcmjs.js module
------------------------
-
-### Usage
+Usage
+-----
 
 The module `dcmjs.js` allows to selectively execute a dcmtk application.
 
@@ -70,7 +45,8 @@ parameters:
 
 * Note that node executables do not have access to the local file system.  To use dcmjs on a browser see the demos in the gh-pages branch.
 
-### Prerequisites
+Prerequisites
+-------------
 
 * Install emscripten: https://github.com/kripken/emscripten/wiki/Emscripten-SDK
 
@@ -78,7 +54,8 @@ parameters:
 
 * Install Git: http://git-scm.com/downloads
 
-### Building
+Building
+--------
 
 The following commands will checkout dcmjs project and build `dcmjs.js`.
 
@@ -99,12 +76,12 @@ $ ls dcmjs-build/bin/
 dcmjs.js  dcmjs.js.gz
 ```
 
-### Caveats
-
+Caveats
+-------
 The DCMTK build may find your system headers, so it's best not to have DCMTK installed on your build machine.  See https://github.com/commontk/dcmjs/issues/8.
 
-### Add / Remove applications
-
+Add / Remove applications
+-------------------------
 
 Re-configuring the project setting any of these options allows to customize the
 list of applications bundled in the `dcmjs.js` module:
