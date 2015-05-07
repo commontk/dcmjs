@@ -59,6 +59,8 @@ Prerequisites
 
 * Install Git: http://git-scm.com/downloads
 
+* On mac you may need to workaround missing python2 (see https://github.com/commontk/dcmjs/issues/10)
+
 Building
 --------
 
