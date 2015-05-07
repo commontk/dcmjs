@@ -53,7 +53,7 @@ parameters:
 Prerequisites
 -------------
 
-* Install emscripten: https://github.com/kripken/emscripten/wiki/Emscripten-SDK
+* Install emscripten: http://kripken.github.io/emscripten-site/docs/getting_started/downloads.html
 
 * Install CMake: http://www.cmake.org
 
