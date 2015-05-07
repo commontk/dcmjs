@@ -68,6 +68,8 @@ The following commands will checkout dcmjs project and build `dcmjs.js`.
 
 Note that you need to change `EMSCRIPTEN_ROOT_PATH` with the path containing `emcc` / `em++`:
 
+It may be something like .../emscripten/emsdk_portable/emscripten/1.30.0
+
 ```
 git clone git://github.com/commontk/dcmjs
 mkdir dcmjs-build
