@@ -7,7 +7,7 @@ Overview
 dcmjs is a javascript cross-compilation of dcmtk (dcmtk.org) for use
 in a javascript environment.  Uses emscripten.
 
-See                  [http://www.dcmjs.org](http://www.dcmjs.org)
+See                  [http://dcmjs.org](http://dcmjs.org)
 
 See License.txt for information on using and contributing.
 
