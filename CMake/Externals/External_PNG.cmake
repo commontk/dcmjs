@@ -27,6 +27,7 @@ if(NOT DEFINED ${proj}_DIR AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
     URL "http://download.sourceforge.net/libpng/libpng-1.6.26.tar.xz"
     URL_MD5 "faed9bb495d2e12dd0c9ec561ca60cd8"
     DOWNLOAD_DIR ${DOWNLOAD_CACHE_DIR}
+    DOWNLOAD_NO_PROGRESS 1
     SOURCE_DIR ${EP_SOURCE_DIR}
     BINARY_DIR ${EP_BINARY_DIR}
     INSTALL_DIR ${EP_INSTALL_DIR}
