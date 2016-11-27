@@ -6,6 +6,8 @@ dcmjs-download-cache
 .*
 # except for .gitignore
 !.gitignore
+# except for .dockcross
+!.dockcross
 
 # Exclude QtCreator files ...
 CMakeLists.txt.user*
