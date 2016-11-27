@@ -5,6 +5,7 @@ machine:
 dependencies:
   cache_directories:
     - ~/docker
+    - ~/download-cache
   override:
     - docker info
     - pip install -U scikit-ci-addons
@@ -13,7 +14,7 @@ dependencies:
 
 test:
   override:
-    - dockcross-browser-asmjs cmake -Bdcmjs-build -H. -GNinja
+    - dockcross-browser-asmjs cmake -Bdcmjs-build -H. -GNinja -DDOWNLOAD_CACHE_DIR:PATH=$HOME/download-cache
     - dockcross-browser-asmjs ninja -Cdcmjs-build
     - cp dcmjs-build/dcmjs-build/bin/dcmjs.js* $CIRCLE_ARTIFACTS/
 
