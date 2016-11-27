@@ -204,16 +204,6 @@ void display_help(const char* prog_name)
 }
 
 //-----------------------------------------------------------------------------
-// Provide empty implementation of openlog/closelog/syslog to shut down warnings.
-// See https://github.com/commontk/dcmjs/issues/1
-extern "C"
-{
-void openlog (const char *ident, int option, int facility){}
-void closelog (void){}
-void syslog(int pri, const char *fmt, ...){}
-}
-
-//-----------------------------------------------------------------------------
 void display_list()
 {
   // The following if/else statement has been generated using:
