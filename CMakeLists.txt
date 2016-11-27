@@ -18,7 +18,7 @@
 #
 ###########################################################################
 
-cmake_minimum_required(VERSION 2.8.12)
+cmake_minimum_required(VERSION 3.7)
 
 project(dcmjs NONE)
 
@@ -41,6 +41,22 @@ if(NOT ${CMAKE_PROJECT_NAME}_USE_GIT_PROTOCOL)
   set(git_protocol "https")
 endif()
 
+# Set a default build type if none was specified
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+  message(STATUS "Setting build type to 'Release' as none was specified.")
+  set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build." FORCE)
+  mark_as_advanced(CMAKE_BUILD_TYPE)
+  # Set the possible values of build type for cmake-gui
+  set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release"
+    "MinSizeRel" "RelWithDebInfo")
+endif()
+
+# Download cache directory
+if(NOT DEFINED DOWNLOAD_CACHE_DIR)
+  set(DOWNLOAD_CACHE_DIR "${CMAKE_CURRENT_BINARY_DIR}/../dcmjs-download-cache")
+endif()
+message(STATUS "Setting download cache directory to: ${DOWNLOAD_CACHE_DIR}")
+
 # If not found by above search, locate using the EMSCRIPTEN environment variable.
 if ("${EMSCRIPTEN_ROOT_PATH}" STREQUAL "")
   set(EMSCRIPTEN_ROOT_PATH "$ENV{EMSCRIPTEN}")
@@ -56,7 +72,8 @@ set(EMSCRIPTEN_REQUIRED_VERSION 1.21.4)
 if(EXISTS ${EMSCRIPTEN_ROOT_PATH}/emscripten-version.txt)
   file(READ ${EMSCRIPTEN_ROOT_PATH}/emscripten-version.txt EMSCRIPTEN_VERSION)
   string(STRIP ${EMSCRIPTEN_VERSION} EMSCRIPTEN_VERSION)
-  message(STATUS "Found Emscripten ${EMSCRIPTEN_VERSION}")
+  string(REPLACE "\"" "" EMSCRIPTEN_VERSION ${EMSCRIPTEN_VERSION})
+  message(STATUS "Found Emscripten [${EMSCRIPTEN_VERSION}]")
   if(EMSCRIPTEN_VERSION VERSION_LESS ${EMSCRIPTEN_REQUIRED_VERSION})
     message(FATAL_ERROR "Emscripten >= ${EMSCRIPTEN_REQUIRED_VERSION} is required.")
   endif()
@@ -100,6 +117,8 @@ if(${PROJECT_NAME}_SUPERBUILD)
       -D${PROJECT_NAME}_SUPERBUILD:BOOL=OFF
       -D${PROJECT_NAME}_SUPERBUILD_BINARY_DIR:PATH=${${PROJECT_NAME}_BINARY_DIR}
       -DDCMJS_PREJS_SCRIPT:FILEPATH=${CMAKE_SOURCE_DIR}/javascripts/pre.js
+    USES_TERMINAL_CONFIGURE 1
+    USES_TERMINAL_BUILD 1
     DEPENDS
       ${${PROJECT_NAME}_DEPENDENCIES}
     )

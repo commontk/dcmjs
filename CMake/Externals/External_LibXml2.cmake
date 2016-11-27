@@ -29,16 +29,14 @@ if(NOT DEFINED ${proj}_DIR AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
   # environment
   set(_env_script ${CMAKE_BINARY_DIR}/${proj}_Env.cmake)
   ExternalProject_Write_SetBuildEnv_Commands(${_env_script})
-  file(WRITE ${_env_script}
+  file(APPEND ${_env_script}
 "#------------------------------------------------------------------------------
 # Added by '${CMAKE_CURRENT_LIST_FILE}'
 include(\"${${CMAKE_PROJECT_NAME}_CMAKE_DIR}/ExternalProjectForNonCMakeProject.cmake\")
 set(CMAKE_BINARY_DIR \"${CMAKE_BINARY_DIR}\")
-set(ENV{CFLAGS} \"${CMAKE_C_FLAGS}\")
-set(ENV{LDFLAGS} \"-L${ZLIB_DIR}/lib -lz\")
+
 ")
 
-  #set(_src_dir ${EP_SOURCE_DIR}/libxml2-2.7.8)
   set(_src_dir ${EP_SOURCE_DIR})
 
   # configure step
@@ -61,13 +59,18 @@ ExternalProject_Execute(${proj} \"build\" ${EMSCRIPTEN_ROOT_PATH}/emmake make)
     
   ExternalProject_Add(${proj}
     ${${proj}_EP_ARGS}
-    URL "ftp://xmlsoft.org/libxml2/libxml2-2.9.1.tar.gz"
-    URL_MD5 "9c0cfef285d5c4a5c80d00904ddab380"
-    DOWNLOAD_DIR ${CMAKE_CURRENT_BINARY_DIR}
+    URL "ftp://xmlsoft.org/libxml2/libxml2-2.9.4.tar.gz"
+    URL_MD5 "ae249165c173b1ff386ee8ad676815f5"
+    DOWNLOAD_DIR ${DOWNLOAD_CACHE_DIR}
+    DOWNLOAD_NO_PROGRESS 1
     SOURCE_DIR ${EP_SOURCE_DIR}
     BUILD_IN_SOURCE 1
     CONFIGURE_COMMAND ${CMAKE_COMMAND} -P ${_configure_script}
     BUILD_COMMAND ${CMAKE_COMMAND} -P ${_build_script}
+    USES_TERMINAL_DOWNLOAD 1
+    USES_TERMINAL_UPDATE 1
+    USES_TERMINAL_CONFIGURE 1
+    USES_TERMINAL_BUILD 1
     INSTALL_COMMAND ""
     DEPENDS
       ${${proj}_DEPENDENCIES}

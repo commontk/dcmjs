@@ -1,6 +1,8 @@
 dcmjs
 =====
 
+[![CircleCI](https://circleci.com/gh/commontk/dcmjs.svg?style=svg)](https://circleci.com/gh/commontk/dcmjs)
+
 Overview
 --------
 
@@ -53,41 +55,39 @@ parameters:
 Prerequisites
 -------------
 
-* Install emscripten: http://kripken.github.io/emscripten-site/docs/getting_started/downloads.html
-
-* Install CMake: http://www.cmake.org
-
 * Install Git: http://git-scm.com/downloads
 
-* On mac you may need to workaround missing python2 (see https://github.com/commontk/dcmjs/issues/10)
+* Install Docker: https://docs.docker.com/engine/installation/
+
+* Install `dockcross-browser-asmjs`:
+
+```
+docker pull dockcross/browser-asmjs
+docker run dockcross/browser-asmjs > ~/bin/dockcross-browser-asmjs
+chmod u+x ~/bin/dockcross-browser-asmjs
+```
+
+For more details, see https://github.com/dockcross/dockcross#readme
+
 
 Building
 --------
 
-The following commands will checkout dcmjs project and build `dcmjs.js`.
-
-Note that you need to change `EMSCRIPTEN_ROOT_PATH` with the path containing `emcc` / `em++`:
-
-It may be something like .../emscripten/emsdk_portable/emscripten/1.30.0
+The following commands will checkout dcmjs project and build `dcmjs.js` using `dockcross-browser-asmjs`.
 
 ```
 git clone git://github.com/commontk/dcmjs
-mkdir dcmjs-build
-cd dcmjs-build
-cmake -DEMSCRIPTEN_ROOT_PATH:PATH=/path/to/emscripten -DCMAKE_BUILD_TYPE:STRING=Release ../dcmjs
-make -j5
+dockcross-browser-asmjs cmake -Bdcmjs-build -H. -GNinja
+dockcross-browser-asmjs ninja -Cdcmjs-build
 ```
 
-When done, you will have the files `dcmjs.js` and `dcmjs.js.gz` in the `dcmjs-build/src` folder:
+When done, you will have the files `dcmjs.js` and `dcmjs.js.gz` in the `dcmjs-build/dcmjs-build/bin` folder:
 
 ```
-$ ls dcmjs-build/bin/
-dcmjs.js  dcmjs.js.gz
+$ ls -1 dcmjs-build/dcmjs-build/bin/
+dcmjs.js
+dcmjs.js.gz
 ```
-
-Caveats
--------
-The DCMTK build may find your system headers, so it's best not to have DCMTK installed on your build machine.  See https://github.com/commontk/dcmjs/issues/8.
 
 Add / Remove applications
 -------------------------
