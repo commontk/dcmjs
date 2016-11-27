@@ -1,3 +1,6 @@
+# dcmjs
+dcmjs-build
+
 # Ignore all dotfiles...
 .*
 # except for .gitignore
