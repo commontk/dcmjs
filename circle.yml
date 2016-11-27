@@ -1,0 +1,19 @@
+machine:
+  services:
+    - docker
+
+dependencies:
+  cache_directories:
+    - ~/docker
+  override:
+    - docker info
+    - pip install -U scikit-ci-addons
+    - ci_addons docker load-pull-save dockcross/browser-asmjs
+    - docker run dockcross/browser-asmjs > ~/bin/dockcross-browser-asmjs; chmod u+x ~/bin/dockcross-browser-asmjs
+
+test:
+  override:
+    - dockcross-browser-asmjs cmake -Bdcmjs-build -H. -GNinja
+    - dockcross-browser-asmjs ninja -Cdcmjs-build
+    - cp dcmjs-build/dcmjs-build/bin/dcmjs.js* $CIRCLE_ARTIFACTS/
+

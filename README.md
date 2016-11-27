@@ -1,6 +1,8 @@
 dcmjs
 =====
 
+[![CircleCI](https://circleci.com/gh/commontk/dcmjs.svg?style=svg)](https://circleci.com/gh/commontk/dcmjs)
+
 Overview
 --------
 
