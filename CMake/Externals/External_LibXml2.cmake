@@ -29,16 +29,14 @@ if(NOT DEFINED ${proj}_DIR AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
   # environment
   set(_env_script ${CMAKE_BINARY_DIR}/${proj}_Env.cmake)
   ExternalProject_Write_SetBuildEnv_Commands(${_env_script})
-  file(WRITE ${_env_script}
+  file(APPEND ${_env_script}
 "#------------------------------------------------------------------------------
 # Added by '${CMAKE_CURRENT_LIST_FILE}'
 include(\"${${CMAKE_PROJECT_NAME}_CMAKE_DIR}/ExternalProjectForNonCMakeProject.cmake\")
 set(CMAKE_BINARY_DIR \"${CMAKE_BINARY_DIR}\")
-set(ENV{CFLAGS} \"${CMAKE_C_FLAGS}\")
 set(ENV{LDFLAGS} \"-L${ZLIB_DIR}/lib -lz\")
 ")
 
-  #set(_src_dir ${EP_SOURCE_DIR}/libxml2-2.7.8)
   set(_src_dir ${EP_SOURCE_DIR})
 
   # configure step
