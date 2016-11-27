@@ -1,5 +1,6 @@
 # dcmjs
 dcmjs-build
+dcmjs-download-cache
 
 # Ignore all dotfiles...
 .*

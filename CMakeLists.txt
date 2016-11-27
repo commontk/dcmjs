@@ -51,6 +51,12 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     "MinSizeRel" "RelWithDebInfo")
 endif()
 
+# Download cache directory
+if(NOT DEFINED DOWNLOAD_CACHE_DIR)
+  set(DOWNLOAD_CACHE_DIR "${CMAKE_CURRENT_BINARY_DIR}/../dcmjs-download-cache")
+endif()
+message(STATUS "Setting download cache directory to: ${DOWNLOAD_CACHE_DIR}")
+
 # If not found by above search, locate using the EMSCRIPTEN environment variable.
 if ("${EMSCRIPTEN_ROOT_PATH}" STREQUAL "")
   set(EMSCRIPTEN_ROOT_PATH "$ENV{EMSCRIPTEN}")
