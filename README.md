@@ -77,6 +77,7 @@ The following commands will checkout dcmjs project and build `dcmjs.js` using `d
 
 ```
 git clone git://github.com/commontk/dcmjs
+cd dcmjs
 dockcross-browser-asmjs cmake -Bdcmjs-build -H. -GNinja
 dockcross-browser-asmjs ninja -Cdcmjs-build
 ```
