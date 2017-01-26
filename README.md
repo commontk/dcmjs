@@ -13,6 +13,8 @@ See                  [http://dcmjs.org](http://dcmjs.org)
 
 See License.txt for information on using and contributing.
 
+This package is intended for use in browser environments.  For server side use probably you want to call to the corresponding natively compiled dcmtk executables.
+
 <table>
 <tr><td>To see javascript that uses <code>dcmjs.js</code> see the
 <code>gh-pages</code> branch of
