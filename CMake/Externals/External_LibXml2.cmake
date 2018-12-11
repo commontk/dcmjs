@@ -77,11 +77,7 @@ ExternalProject_Execute(${proj} \"build\" ${EMSCRIPTEN_ROOT_PATH}/emmake make)
     )
   set(${proj}_DIR ${_src_dir})
   set(LIBXML2_INCLUDE_DIR ${${proj}_DIR}/include)
-  if(APPLE)
-    set(LIBXML2_LIBRARIES ${${proj}_DIR}/.libs/libxml2.dylib)
-  else()
-    set(LIBXML2_LIBRARIES ${${proj}_DIR}/.libs/libxml2.so)
-  endif()
+  set(LIBXML2_LIBRARIES ${${proj}_DIR}/.libs/libxml2.a)
 else()
   # The project is provided using <proj>_DIR, nevertheless since other project may depend on <proj>,
   # let's add an 'empty' one
