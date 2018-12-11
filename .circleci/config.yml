@@ -1,0 +1,23 @@
+version: 2
+jobs:
+  build:
+    working_directory: /work
+    docker:
+      - image: dockcross/browser-asmjs
+    steps:
+      - checkout
+      - restore_cache:
+          key: download-cache
+      - run:
+          name: Configure and build dcmjs.js
+          command: |
+            cmake -Bdcmjs-build -H. -GNinja -DDOWNLOAD_CACHE_DIR:PATH=$HOME/download-cache
+            ninja -Cdcmjs-build
+      - save_cache:
+          key: download-cache-{{ .Revision }}
+          paths:
+            - ~/download-cache
+      - store_artifacts:
+          path: /work/dcmjs-build/dcmjs-build/bin/dcmjs.js*
+
+

@@ -24,8 +24,8 @@ if(NOT DEFINED ${proj}_DIR AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
 
   ExternalProject_Add(${proj}
     ${${proj}_EP_ARGS}
-    URL "http://download.sourceforge.net/libpng/libpng-1.6.26.tar.xz"
-    URL_MD5 "faed9bb495d2e12dd0c9ec561ca60cd8"
+    URL "http://download.sourceforge.net/libpng/libpng-1.6.36.tar.xz"
+    URL_MD5 "df2be2d29c40937fe1f5349b16bc2826"
     DOWNLOAD_DIR ${DOWNLOAD_CACHE_DIR}
     DOWNLOAD_NO_PROGRESS 1
     SOURCE_DIR ${EP_SOURCE_DIR}
