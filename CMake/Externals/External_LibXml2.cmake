@@ -59,8 +59,8 @@ ExternalProject_Execute(${proj} \"build\" ${EMSCRIPTEN_ROOT_PATH}/emmake make)
     
   ExternalProject_Add(${proj}
     ${${proj}_EP_ARGS}
-    URL "ftp://xmlsoft.org/libxml2/libxml2-2.9.4.tar.gz"
-    URL_MD5 "ae249165c173b1ff386ee8ad676815f5"
+    URL "ftp://xmlsoft.org/libxml2/libxml2-2.9.8.tar.gz"
+    URL_MD5 "b786e353e2aa1b872d70d5d1ca0c740d"
     DOWNLOAD_DIR ${DOWNLOAD_CACHE_DIR}
     DOWNLOAD_NO_PROGRESS 1
     SOURCE_DIR ${EP_SOURCE_DIR}
