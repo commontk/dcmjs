@@ -18,6 +18,6 @@ jobs:
           paths:
             - ~/download-cache
       - store_artifacts:
-          path: /work/dcmjs-build/dcmjs-build/bin/dcmjs.js*
+          path: /work/dcmjs-build/dcmjs-build/bin/
 
 

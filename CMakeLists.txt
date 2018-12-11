@@ -122,6 +122,7 @@ if(${PROJECT_NAME}_SUPERBUILD)
     DEPENDS
       ${${PROJECT_NAME}_DEPENDENCIES}
     )
+  ExternalProject_AlwaysConfigure(${PROJECT_NAME})
   return()
 endif()
 
