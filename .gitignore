@@ -4,6 +4,8 @@ dcmjs-download-cache
 
 # Ignore all dotfiles...
 .*
+# expect for .circleci
+!.circleci
 # except for .gitignore
 !.gitignore
 # except for .dockcross
