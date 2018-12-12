@@ -1,0 +1,84 @@
+cmake_minimum_required(VERSION 3.11)
+
+project( xml2 )
+
+set(srcs 
+  buf.c
+  c14n.c
+  catalog.c
+  chvalid.c
+  debugXML.c
+  dict.c
+  DOCBparser.c
+  encoding.c
+  entities.c
+  error.c
+  globals.c
+  hash.c
+  # HTMLparser.c # WITH_HTML
+  # HTMLtree.c # WITH_HTML
+  legacy.c
+  list.c
+  # nanoftp.c # WITH_FTP
+  # nanohttp.c # WITH_HTTP
+  parser.c
+  parserInternals.c
+  pattern.c
+  relaxng.c
+  #runsuite.c
+  #runtest.c
+  #runxmlconf.c # executable
+  SAX2.c
+  SAX.c
+  schematron.c
+  #testapi.c
+  #testAutomata.c
+  #testC14N.c
+  #testchar.c
+  #testdict.c
+  #testdso.c
+  #testHTML.c
+  #testlimits.c
+  #testModule.c
+  #testReader.c
+  #testrecurse.c
+  #testRegexp.c
+  #testRelax.c
+  #testSAX.c
+  #testSchemas.c
+  #testThreads.c
+  #testThreadsWin32.c
+  #testURI.c
+  #testXPath.c
+  threads.c
+  tree.c
+  trio.c
+  trionan.c
+  triostr.c
+  uri.c
+  valid.c
+  xinclude.c
+  xlink.c
+  #xmlcatalog.c # executable
+  xmlIO.c
+  #xmllint.c # executable
+  xmlmemory.c
+  xmlmodule.c
+  xmlreader.c
+  xmlregexp.c
+  xmlsave.c
+  xmlschemas.c
+  xmlschemastypes.c
+  xmlstring.c
+  xmlunicode.c
+  xmlwriter.c
+  xpath.c
+  xpointer.c
+  xzlib.c
+  )
+    
+#--without-python --without-iconv --without-http --without-ftp --enable-shared --disable-static
+
+add_library( xml2 SHARED ${srcs})
+target_include_directories(xml2 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_compile_definitions(xml2 PUBLIC HAVE_CONFIG_H HAVE_ERRNO_H LIBXML_THREAD_ENABLED)
