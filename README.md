@@ -167,5 +167,15 @@ cd DCMTK
 for file in `find -wholename *apps/*.cc`; do
   appname=$( basename ${file%.*} );
   echo -e "* [${appname}](http://support.dcmtk.org/docs/${appname}.html): \`-DCMTK_APP_${appname^^}:BOOL=[ON|OFF]\`";
-done
+done | sort
+```
+
+List of options found in [CMake/Externals/External_DCMTK.cmake](https://github.com/commontk/dcmjs/blob/master/CMake/Externals/External_DCMTK.cmake) can be generated using:
+
+```
+cd DCMTK
+for file in `find -wholename *apps/*.cc`; do
+  appname=$( basename ${file%.*} );
+  echo -e "      -DBUILD_${appname}_APP:BOOL=OFF";
+done | sort
 ```

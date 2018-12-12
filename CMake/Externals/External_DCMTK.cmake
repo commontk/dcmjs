@@ -82,7 +82,6 @@ if(NOT DEFINED DCMTK_DIR AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
       -DBUILD_dcod2lum_APP:BOOL=OFF
       -DBUILD_dconvlum_APP:BOOL=OFF
       -DBUILD_drtdump_APP:BOOL=OFF
-      -DBUILD_drttest_APP:BOOL=OFF
       -DBUILD_dsr2html_APP:BOOL=OFF
       -DBUILD_dsr2xml_APP:BOOL=OFF
       -DBUILD_dsrdump_APP:BOOL=OFF
@@ -91,17 +90,15 @@ if(NOT DEFINED DCMTK_DIR AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
       -DBUILD_findscu_APP:BOOL=OFF
       -DBUILD_getscu_APP:BOOL=OFF
       -DBUILD_img2dcm_APP:BOOL=OFF
-      -DBUILD_mkreport_APP:BOOL=OFF
+      -DBUILD_mdfconen_APP:BOOL=OFF
+      -DBUILD_mdfdsman_APP:BOOL=OFF
       -DBUILD_movescu_APP:BOOL=OFF
       -DBUILD_pdf2dcm_APP:BOOL=OFF
-      -DBUILD_preplock_APP:BOOL=OFF
-      -DBUILD_readoviw_APP:BOOL=OFF
-      -DBUILD_readwlst_APP:BOOL=OFF
       -DBUILD_storescp_APP:BOOL=OFF
       -DBUILD_storescu_APP:BOOL=OFF
       -DBUILD_termscu_APP:BOOL=OFF
+      -DBUILD_wlcefs_APP:BOOL=OFF
       -DBUILD_wlmscpfs_APP:BOOL=OFF
-      -DBUILD_writwlst_APP:BOOL=OFF
       -DBUILD_xml2dcm_APP:BOOL=ON
       -DBUILD_xml2dsr_APP:BOOL=OFF
       # Toolchain customization
