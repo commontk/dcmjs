@@ -118,6 +118,8 @@ Add / Remove applications
 Re-configuring the project setting any of these options allows to customize the
 list of applications bundled in the `dcmjs.js` module:
 
+* [cda2dcm](http://support.dcmtk.org/docs/cda2dcm.html): `-DBUILD_cda2dcm_APP:BOOL=[ON|OFF]`
+* [dcm2json](http://support.dcmtk.org/docs/dcm2json.html): `-DBUILD_dcm2json_APP:BOOL=[ON|OFF]`
 * [dcm2pdf](http://support.dcmtk.org/docs/dcm2pdf.html): `-DBUILD_dcm2pdf_APP:BOOL=[ON|OFF]`
 * [dcm2pnm](http://support.dcmtk.org/docs/dcm2pnm.html): `-DBUILD_dcm2pnm_APP:BOOL=[ON|OFF]`
 * [dcm2xml](http://support.dcmtk.org/docs/dcm2xml.html): `-DBUILD_dcm2xml_APP:BOOL=[ON|OFF]`
@@ -132,6 +134,7 @@ list of applications bundled in the `dcmjs.js` module:
 * [dcmdump](http://support.dcmtk.org/docs/dcmdump.html): `-DBUILD_dcmdump_APP:BOOL=[ON|OFF]`
 * [dcmftest](http://support.dcmtk.org/docs/dcmftest.html): `-DBUILD_dcmftest_APP:BOOL=[ON|OFF]`
 * [dcmgpdir](http://support.dcmtk.org/docs/dcmgpdir.html): `-DBUILD_dcmgpdir_APP:BOOL=[ON|OFF]`
+* [dcmicmp](http://support.dcmtk.org/docs/dcmicmp.html): `-DBUILD_dcmicmp_APP:BOOL=[ON|OFF]`
 * [dcmj2pnm](http://support.dcmtk.org/docs/dcmj2pnm.html): `-DBUILD_dcmj2pnm_APP:BOOL=[ON|OFF]`
 * [dcml2pnm](http://support.dcmtk.org/docs/dcml2pnm.html): `-DBUILD_dcml2pnm_APP:BOOL=[ON|OFF]`
 * [dcmmkcrv](http://support.dcmtk.org/docs/dcmmkcrv.html): `-DBUILD_dcmmkcrv_APP:BOOL=[ON|OFF]`
@@ -169,6 +172,7 @@ list of applications bundled in the `dcmjs.js` module:
 * [mdfdsman](http://support.dcmtk.org/docs/mdfdsman.html): `-DBUILD_mdfdsman_APP:BOOL=[ON|OFF]`
 * [movescu](http://support.dcmtk.org/docs/movescu.html): `-DBUILD_movescu_APP:BOOL=[ON|OFF]`
 * [pdf2dcm](http://support.dcmtk.org/docs/pdf2dcm.html): `-DBUILD_pdf2dcm_APP:BOOL=[ON|OFF]`
+* [stl2dcm](http://support.dcmtk.org/docs/stl2dcm.html): `-DBUILD_stl2dcm_APP:BOOL=[ON|OFF]`
 * [storescp](http://support.dcmtk.org/docs/storescp.html): `-DBUILD_storescp_APP:BOOL=[ON|OFF]`
 * [storescu](http://support.dcmtk.org/docs/storescu.html): `-DBUILD_storescu_APP:BOOL=[ON|OFF]`
 * [termscu](http://support.dcmtk.org/docs/termscu.html): `-DBUILD_termscu_APP:BOOL=[ON|OFF]`
