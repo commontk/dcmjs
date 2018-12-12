@@ -1,0 +1,46 @@
+
+// STD includes
+#include <cstdlib>
+#include <iostream>
+
+@DCMJS_APP_INCLUDE@
+
+//-----------------------------------------------------------------------------
+void display_help(const char* prog_name)
+{
+  std::cout << "Usage: " << prog_name << " <appname> [options]"<< std::endl;
+}
+
+//-----------------------------------------------------------------------------
+void display_list()
+{
+  @DCMJS_DISPLAY_LIST_IMPL@
+}
+
+//-----------------------------------------------------------------------------
+int main(int argc, char* argv[])
+{
+  if(argc < 2)
+    {
+    display_help(argv[0]);
+    return EXIT_FAILURE;
+    }
+
+  char * app_name = argv[1];
+  char ** app_argv = &argv[1];
+  int app_argc = argc - 1;
+
+  if (strcmp(app_name, "list") == 0)
+    {
+    display_list();
+    }
+  @DCMJS_MAIN_IMPL@
+  else
+    {
+    std::cerr << "Unknown application name !" << std::endl;
+    display_help(argv[0]);
+    return EXIT_FAILURE;
+    }
+
+  return EXIT_SUCCESS;
+}
