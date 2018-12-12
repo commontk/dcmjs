@@ -92,6 +92,26 @@ dcmjs.js
 dcmjs.js.gz
 ```
 
+File IO using node
+------------------
+
+To support using the javascript module with node, the current folder is mounted as `/working`. This
+means that input files must be in in the current directory or a sub-directory.
+
+For example, assuming we have the these files:
+
+```
+/home/awesome/downloads/dcmjs.js
+/tmp/data/sr.dcm
+```
+
+The following is expected to work:
+
+```
+cd /tmp
+nodejs /home/awesome/downloads/dcmjs.js dsr2xml /working/data/sr.dcm
+```
+
 Add / Remove applications
 -------------------------
 

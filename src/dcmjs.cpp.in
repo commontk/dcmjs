@@ -3,6 +3,8 @@
 #include <cstdlib>
 #include <iostream>
 
+#include <emscripten.h>
+
 @DCMJS_APP_INCLUDE@
 
 //-----------------------------------------------------------------------------
@@ -29,6 +31,15 @@ int main(int argc, char* argv[])
   char * app_name = argv[1];
   char ** app_argv = &argv[1];
   int app_argc = argc - 1;
+
+#ifndef NODERAWFS
+  // mount the current folder as a NODEFS instance
+  // inside of emscripten
+  EM_ASM(
+    FS.mkdir('/working');
+    FS.mount(NODEFS, { root: '.' }, '/working');
+  );
+#endif
 
   if (strcmp(app_name, "list") == 0)
     {
