@@ -43,7 +43,6 @@ if(NOT DEFINED DCMTK_DIR AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
       -DDCMTK_WITH_ICONV:BOOL=OFF
       -DDCMTK_WITH_THREADS:BOOL=OFF
       -DBUILD_TESTING:BOOL=OFF
-      -DBUILD_ofstd_tests_APP:BOOL=OFF
       -DBUILD_dcm2xml_APP:BOOL=ON
       -DBUILD_dcmconv_APP:BOOL=OFF
       -DBUILD_dcmcrle_APP:BOOL=OFF
@@ -57,7 +56,6 @@ if(NOT DEFINED DCMTK_DIR AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
       -DBUILD_dcm2pdf_APP:BOOL=OFF
       -DBUILD_img2dcm_APP:BOOL=OFF
       -DBUILD_dcmodify_APP:BOOL=OFF
-      -DBUILD_dcmdata_tests_APP:BOOL=OFF
       -DBUILD_dcmdspfn_APP:BOOL=OFF
       -DBUILD_dcod2lum_APP:BOOL=OFF
       -DBUILD_dconvlum_APP:BOOL=OFF
@@ -80,13 +78,11 @@ if(NOT DEFINED DCMTK_DIR AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
       -DBUILD_storescp_APP:BOOL=OFF
       -DBUILD_storescu_APP:BOOL=OFF
       -DBUILD_termscu_APP:BOOL=OFF
-      -DBUILD_dcmnet_tests_APP:BOOL=OFF
       -DBUILD_dsr2html_APP:BOOL=OFF
       -DBUILD_dsr2xml_APP:BOOL=OFF
       -DBUILD_dsrdump_APP:BOOL=OFF
       -DBUILD_xml2dsr_APP:BOOL=OFF
       -DBUILD_mkreport_APP:BOOL=OFF
-      -DBUILD_dcmsr_tests_APP:BOOL=OFF
       -DBUILD_dcmsign_APP:BOOL=OFF
       -DBUILD_wlmscpfs_APP:BOOL=OFF
       -DBUILD_readoviw_APP:BOOL=OFF
@@ -108,7 +104,6 @@ if(NOT DEFINED DCMTK_DIR AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
       -DBUILD_dcmpssnd_APP:BOOL=OFF
       -DBUILD_drtdump_APP:BOOL=OFF
       -DBUILD_drttest_APP:BOOL=OFF
-      -DBUILD_dcmrt_tests_APP:BOOL=OFF
       # Toolchain customization
       -DC_CHAR_SIGNED:BOOL=1
       -DHAVE__FINDFIRST:BOOL=0
