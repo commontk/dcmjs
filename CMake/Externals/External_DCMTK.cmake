@@ -21,6 +21,81 @@ if(NOT DEFINED DCMTK_DIR AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
   set(${proj}_REPOSITORY ${git_protocol}://github.com/jcfr/DCMTK)
   set(${proj}_GIT_TAG "693eabe2f2a8285be4027b45d816774d50389256") # Based of DCMTK-3.6.1_20161102
 
+  set(app_cache_args)
+
+  macro(dcmtk_build_app_option varname default)
+    if(NOT DEFINED ${varname})
+      set(value ${default})
+    else()
+      set(value ${${varname}})
+    endif()
+    list(APPEND app_cache_args
+      -D${varname}:BOOL=${value}
+      )
+    if(${value})
+      ExternalProject_Message(${proj} "${varname}: ${value}")
+    endif()
+  endmacro()
+
+  dcmtk_build_app_option(BUILD_dcm2pdf_APP   OFF)
+  dcmtk_build_app_option(BUILD_dcm2pnm_APP   ON)
+  dcmtk_build_app_option(BUILD_dcm2xml_APP   ON)
+  dcmtk_build_app_option(BUILD_dcmcjpeg_APP  OFF)
+  dcmtk_build_app_option(BUILD_dcmcjpls_APP  OFF)
+  dcmtk_build_app_option(BUILD_dcmconv_APP   OFF)
+  dcmtk_build_app_option(BUILD_dcmcrle_APP   OFF)
+  dcmtk_build_app_option(BUILD_dcmdjpeg_APP  OFF)
+  dcmtk_build_app_option(BUILD_dcmdjpls_APP  OFF)
+  dcmtk_build_app_option(BUILD_dcmdrle_APP   OFF)
+  dcmtk_build_app_option(BUILD_dcmdspfn_APP  OFF)
+  dcmtk_build_app_option(BUILD_dcmdump_APP   ON)
+  dcmtk_build_app_option(BUILD_dcmftest_APP  ON)
+  dcmtk_build_app_option(BUILD_dcmgpdir_APP  OFF)
+  dcmtk_build_app_option(BUILD_dcmj2pnm_APP  OFF)
+  dcmtk_build_app_option(BUILD_dcml2pnm_APP  OFF)
+  dcmtk_build_app_option(BUILD_dcmmkcrv_APP  OFF)
+  dcmtk_build_app_option(BUILD_dcmmkdir_APP  OFF)
+  dcmtk_build_app_option(BUILD_dcmmklut_APP  OFF)
+  dcmtk_build_app_option(BUILD_dcmodify_APP  OFF)
+  dcmtk_build_app_option(BUILD_dcmp2pgm_APP  OFF)
+  dcmtk_build_app_option(BUILD_dcmprscp_APP  OFF)
+  dcmtk_build_app_option(BUILD_dcmprscu_APP  OFF)
+  dcmtk_build_app_option(BUILD_dcmpschk_APP  OFF)
+  dcmtk_build_app_option(BUILD_dcmpsmk_APP   OFF)
+  dcmtk_build_app_option(BUILD_dcmpsprt_APP  OFF)
+  dcmtk_build_app_option(BUILD_dcmpsrcv_APP  OFF)
+  dcmtk_build_app_option(BUILD_dcmpssnd_APP  OFF)
+  dcmtk_build_app_option(BUILD_dcmqridx_APP  OFF)
+  dcmtk_build_app_option(BUILD_dcmqrscp_APP  OFF)
+  dcmtk_build_app_option(BUILD_dcmqrti_APP   OFF)
+  dcmtk_build_app_option(BUILD_dcmquant_APP  OFF)
+  dcmtk_build_app_option(BUILD_dcmrecv_APP   OFF)
+  dcmtk_build_app_option(BUILD_dcmscale_APP  OFF)
+  dcmtk_build_app_option(BUILD_dcmsend_APP   OFF)
+  dcmtk_build_app_option(BUILD_dcmsign_APP   OFF)
+  dcmtk_build_app_option(BUILD_dcod2lum_APP  OFF)
+  dcmtk_build_app_option(BUILD_dconvlum_APP  OFF)
+  dcmtk_build_app_option(BUILD_drtdump_APP   OFF)
+  dcmtk_build_app_option(BUILD_dsr2html_APP  OFF)
+  dcmtk_build_app_option(BUILD_dsr2xml_APP   OFF)
+  dcmtk_build_app_option(BUILD_dsrdump_APP   OFF)
+  dcmtk_build_app_option(BUILD_dump2dcm_APP  OFF)
+  dcmtk_build_app_option(BUILD_echoscu_APP   OFF)
+  dcmtk_build_app_option(BUILD_findscu_APP   OFF)
+  dcmtk_build_app_option(BUILD_getscu_APP    OFF)
+  dcmtk_build_app_option(BUILD_img2dcm_APP   OFF)
+  dcmtk_build_app_option(BUILD_mdfconen_APP  OFF)
+  dcmtk_build_app_option(BUILD_mdfdsman_APP  OFF)
+  dcmtk_build_app_option(BUILD_movescu_APP   OFF)
+  dcmtk_build_app_option(BUILD_pdf2dcm_APP   OFF)
+  dcmtk_build_app_option(BUILD_storescp_APP  OFF)
+  dcmtk_build_app_option(BUILD_storescu_APP  OFF)
+  dcmtk_build_app_option(BUILD_termscu_APP   OFF)
+  dcmtk_build_app_option(BUILD_wlcefs_APP    OFF)
+  dcmtk_build_app_option(BUILD_wlmscpfs_APP  OFF)
+  dcmtk_build_app_option(BUILD_xml2dcm_APP   ON)
+  dcmtk_build_app_option(BUILD_xml2dsr_APP   OFF)
+
   ExternalProject_Add(${proj}
     ${${proj}_EP_ARGS}
     GIT_REPOSITORY ${DCMTK_REPOSITORY}
@@ -43,64 +118,7 @@ if(NOT DEFINED DCMTK_DIR AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
       -DDCMTK_WITH_ICONV:BOOL=OFF
       -DDCMTK_WITH_THREADS:BOOL=OFF
       -DBUILD_TESTING:BOOL=OFF
-      -DBUILD_dcm2pdf_APP:BOOL=OFF
-      -DBUILD_dcm2pnm_APP:BOOL=ON
-      -DBUILD_dcm2xml_APP:BOOL=ON
-      -DBUILD_dcmcjpeg_APP:BOOL=OFF
-      -DBUILD_dcmcjpls_APP:BOOL=OFF
-      -DBUILD_dcmconv_APP:BOOL=OFF
-      -DBUILD_dcmcrle_APP:BOOL=OFF
-      -DBUILD_dcmdjpeg_APP:BOOL=OFF
-      -DBUILD_dcmdjpls_APP:BOOL=OFF
-      -DBUILD_dcmdrle_APP:BOOL=OFF
-      -DBUILD_dcmdspfn_APP:BOOL=OFF
-      -DBUILD_dcmdump_APP:BOOL=ON
-      -DBUILD_dcmftest_APP:BOOL=ON
-      -DBUILD_dcmgpdir_APP:BOOL=OFF
-      -DBUILD_dcmj2pnm_APP:BOOL=OFF
-      -DBUILD_dcml2pnm_APP:BOOL=OFF
-      -DBUILD_dcmmkcrv_APP:BOOL=OFF
-      -DBUILD_dcmmkdir_APP:BOOL=OFF
-      -DBUILD_dcmmklut_APP:BOOL=OFF
-      -DBUILD_dcmodify_APP:BOOL=OFF
-      -DBUILD_dcmp2pgm_APP:BOOL=OFF
-      -DBUILD_dcmprscp_APP:BOOL=OFF
-      -DBUILD_dcmprscu_APP:BOOL=OFF
-      -DBUILD_dcmpschk_APP:BOOL=OFF
-      -DBUILD_dcmpsmk_APP:BOOL=OFF
-      -DBUILD_dcmpsprt_APP:BOOL=OFF
-      -DBUILD_dcmpsrcv_APP:BOOL=OFF
-      -DBUILD_dcmpssnd_APP:BOOL=OFF
-      -DBUILD_dcmqridx_APP:BOOL=OFF
-      -DBUILD_dcmqrscp_APP:BOOL=OFF
-      -DBUILD_dcmqrti_APP:BOOL=OFF
-      -DBUILD_dcmquant_APP:BOOL=OFF
-      -DBUILD_dcmrecv_APP:BOOL=OFF
-      -DBUILD_dcmscale_APP:BOOL=OFF
-      -DBUILD_dcmsend_APP:BOOL=OFF
-      -DBUILD_dcmsign_APP:BOOL=OFF
-      -DBUILD_dcod2lum_APP:BOOL=OFF
-      -DBUILD_dconvlum_APP:BOOL=OFF
-      -DBUILD_drtdump_APP:BOOL=OFF
-      -DBUILD_dsr2html_APP:BOOL=OFF
-      -DBUILD_dsr2xml_APP:BOOL=OFF
-      -DBUILD_dsrdump_APP:BOOL=OFF
-      -DBUILD_dump2dcm_APP:BOOL=OFF
-      -DBUILD_echoscu_APP:BOOL=OFF
-      -DBUILD_findscu_APP:BOOL=OFF
-      -DBUILD_getscu_APP:BOOL=OFF
-      -DBUILD_img2dcm_APP:BOOL=OFF
-      -DBUILD_mdfconen_APP:BOOL=OFF
-      -DBUILD_mdfdsman_APP:BOOL=OFF
-      -DBUILD_movescu_APP:BOOL=OFF
-      -DBUILD_pdf2dcm_APP:BOOL=OFF
-      -DBUILD_storescp_APP:BOOL=OFF
-      -DBUILD_storescu_APP:BOOL=OFF
-      -DBUILD_termscu_APP:BOOL=OFF
-      -DBUILD_wlcefs_APP:BOOL=OFF
-      -DBUILD_wlmscpfs_APP:BOOL=OFF
-      -DBUILD_xml2dcm_APP:BOOL=ON
-      -DBUILD_xml2dsr_APP:BOOL=OFF
+      ${app_cache_args}
       # Toolchain customization
       -DC_CHAR_SIGNED:BOOL=1
       -DHAVE__FINDFIRST:BOOL=0
