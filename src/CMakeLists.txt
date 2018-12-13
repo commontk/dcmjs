@@ -30,17 +30,55 @@ SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 find_package(DCMTK CONFIG REQUIRED)
 include_directories(${DCMTK_INCLUDE_DIRS})
 
+# dcmjs_app_config.h
+#set(_content )
+#foreach(appname ${DCMTK_APPLICATIONS})
+#  set(_content "${_content}\n\#define DCMJS_APP_${appname}")
+#endforeach()
+#file(WRITE "${CMAKE_BINARY_DIR}/CMakeFiles/dcmjs_app_config.h" "${_content}")
+#configure_file(
+#  ${CMAKE_BINARY_DIR}/CMakeFiles/dcmjs_app_config.h
+#  ${CMAKE_BINARY_DIR}/src/dcmjs_app_config.h
+#  )
+
+# DCMJS_APP_INCLUDE
 set(_content )
 foreach(appname ${DCMTK_APPLICATIONS})
-  set(_content "${_content}\n\#define DCMJS_APP_${appname}")
+  set(_content "${_content}
+\#include <dcmtk/config/${appname}_app.h>"
+)
 endforeach()
-file(WRITE "${CMAKE_BINARY_DIR}/CMakeFiles/dcmjs_app_config.h" "${_content}")
+set(DCMJS_APP_INCLUDE ${_content})
+
+# DCMJS_DISPLAY_LIST_IMPL
+set(_content )
+foreach(appname ${DCMTK_APPLICATIONS})
+  set(_content "${_content}
+  std::cout << \"${appname}\" << std::endl\;"
+)
+endforeach()
+set(DCMJS_DISPLAY_LIST_IMPL ${_content})
+
+# DCMJS_MAIN_IMPL
+set(_content )
+foreach(appname ${DCMTK_APPLICATIONS})
+  set(_content "${_content}
+  else if (strcmp(app_name, \"${appname}\") == 0)
+    {
+    return ${appname}_main(app_argc, app_argv);
+    }"
+)
+endforeach()
+set(DCMJS_MAIN_IMPL ${_content})
+
+# Configure main.cpp
 configure_file(
-  ${CMAKE_BINARY_DIR}/CMakeFiles/dcmjs_app_config.h
-  ${CMAKE_BINARY_DIR}/src/dcmjs_app_config.h
+  dcmjs.cpp.in
+  ${CMAKE_BINARY_DIR}/src/dcmjs.cpp
   )
 
-add_executable(${PROJECT_NAME} ${PROJECT_NAME}.cpp)
+# Build dcmjs
+add_executable(${PROJECT_NAME} ${CMAKE_BINARY_DIR}/src/dcmjs.cpp)
 target_link_libraries(${PROJECT_NAME} ${DCMTK_APPLICATIONS})
 
 if(DCMJS_PREJS_SCRIPT)
