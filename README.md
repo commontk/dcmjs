@@ -52,7 +52,14 @@ parameters:
 [...]
 ```
 
-* Note that node executables do not have access to the local file system.  To use dcmjs on a browser see the demos in the gh-pages branch.
+* Notes:
+
+  * Node executables can access the local file system. Read [here](#file-io-using-node) for more details.
+
+  * To use dcmjs on a browser see the demos at http://dcmjs.org/
+
+  * To learn how to use dcmjs from javascript, see [javascripts/utils.js](https://github.com/commontk/dcmjs.org/blob/gh-pages/javascripts/utils.js#L64-L66) and [dump/index.html](https://github.com/commontk/dcmjs.org/blob/gh-pages/dump/index.html#L18-L39)
+
 
 Prerequisites
 -------------
