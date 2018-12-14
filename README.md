@@ -202,3 +202,25 @@ for file in `find -wholename *apps/*.cc`; do
   echo -e "dcmtk_build_app_option(BUILD_${appname}_APP OFF)";
 done | sort | column -t
 ```
+
+Creating a release
+------------------
+
+1. Choose a release name (e.g dcmjs-3.6.1)
+
+```
+release=<name-of-release>
+```
+
+2. Fetch and tag repository
+
+```
+git fetch
+git tag -s -m "${release}" ${release} origin/master
+```
+
+3. Publish tag
+
+```
+git push origin ${release}
+```
