@@ -116,7 +116,7 @@ The following is expected to work:
 
 ```
 cd /tmp
-nodejs /home/awesome/downloads/dcmjs.js dsr2xml /working/data/sr.dcm
+node /home/awesome/downloads/dcmjs.js dsr2xml /working/data/sr.dcm
 ```
 
 Add / Remove applications
