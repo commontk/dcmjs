@@ -36,8 +36,10 @@ int main(int argc, char* argv[])
   // mount the current folder as a NODEFS instance
   // inside of emscripten
   EM_ASM(
-    FS.mkdir('/working');
-    FS.mount(NODEFS, { root: '.' }, '/working');
+    if (typeof window === 'undefined') {
+      FS.mkdir('/working');
+      FS.mount(NODEFS, { root: '.' }, '/working');
+    }
   );
 #endif
 
