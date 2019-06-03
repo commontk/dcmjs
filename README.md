@@ -68,12 +68,12 @@ Prerequisites
 
 * Install Docker: https://docs.docker.com/engine/installation/
 
-* Install `dockcross-browser-asmjs`:
+* Install `dockcross-web-wasm`:
 
 ```
-docker pull dockcross/browser-asmjs
-docker run dockcross/browser-asmjs > ~/bin/dockcross-browser-asmjs
-chmod u+x ~/bin/dockcross-browser-asmjs
+docker pull dockcross/web-wasm
+docker run dockcross/web-wasm > ~/bin/dockcross-web-wasm
+chmod u+x ~/bin/dockcross-web-wasm
 ```
 
 For more details, see https://github.com/dockcross/dockcross#readme
@@ -82,13 +82,13 @@ For more details, see https://github.com/dockcross/dockcross#readme
 Building
 --------
 
-The following commands will checkout dcmjs project and build `dcmjs.js` using `dockcross-browser-asmjs`.
+The following commands will checkout dcmjs project and build `dcmjs.js` using `dockcross-web-wasm`.
 
 ```
 git clone git://github.com/commontk/dcmjs
 cd dcmjs
-dockcross-browser-asmjs cmake -Bdcmjs-build -H. -GNinja
-dockcross-browser-asmjs ninja -Cdcmjs-build
+dockcross-web-wasm cmake -Bdcmjs-build -H. -GNinja
+dockcross-web-wasm ninja -Cdcmjs-build
 ```
 
 When done, you will have the files `dcmjs.js` and `dcmjs.js.gz` in the `dcmjs-build/dcmjs-build/bin` folder:
