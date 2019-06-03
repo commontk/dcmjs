@@ -100,3 +100,9 @@ if(GZIP_EXECUTABLE)
     )
 endif()
 
+# Configure CLI
+file(
+  COPY ${CMAKE_SOURCE_DIR}/javascripts/dcmjs-cli
+  DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
+  )
+
