@@ -84,6 +84,9 @@ target_link_libraries(${PROJECT_NAME} ${DCMTK_APPLICATIONS})
 if(DCMJS_PREJS_SCRIPT)
   em_link_pre_js(${PROJECT_NAME} ${DCMJS_PREJS_SCRIPT})
 endif()
+if(DCMJS_POSTJS_SCRIPT)
+  em_link_post_js(${PROJECT_NAME} ${DCMJS_POSTJS_SCRIPT})
+endif()
 
 # Compress .js
 find_program(GZIP_EXECUTABLE gzip)
