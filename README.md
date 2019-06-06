@@ -25,23 +25,40 @@ which is what hosts dcmjs.org.</td></tr>
 Usage
 -----
 
-The module `dcmjs.js` allows to selectively execute a dcmtk application.
+The module `dcmjs` allows to selectively execute a dcmtk application.
 
 * To list available application:
 
+```js
+require('dcmjs').run(['list'])
 ```
-$ node dcmjs.js list
+
+```
+$ node dcmjs-cli list
+```
+
+Output:
+
+```
 dcm2pnm
 dcmdump
 dcm2xml
 dcmftest
 ```
 
-
 * To execute an application:
 
+```js
+require('dcmjs').run(['dcmdump'])
 ```
-$ node dcmjs.js dcmdump
+
+```
+$ node dcmjs-cli dcmdump
+```
+
+Output:
+
+```
 $dcmtk: dcmdump v3.6.1 DEV $
 
 dcmdump: Dump DICOM file and data set
@@ -91,12 +108,15 @@ dockcross-web-wasm cmake -Bdcmjs-build -H. -GNinja
 dockcross-web-wasm ninja -Cdcmjs-build
 ```
 
-When done, you will have the files `dcmjs.js` and `dcmjs.js.gz` in the `dcmjs-build/dcmjs-build/bin` folder:
+When done, you will have these files in the `dcmjs-build/dcmjs-build/bin` folder:
 
 ```
 $ ls -1 dcmjs-build/dcmjs-build/bin/
+dcmjs-cli
 dcmjs.js
 dcmjs.js.gz
+dcmjs.wasm
+dcmjs.wasmt
 ```
 
 File IO using node
@@ -108,6 +128,7 @@ means that input files must be in in the current directory or a sub-directory.
 For example, assuming we have the these files:
 
 ```
+/home/awesome/downloads/dcmjs-cli
 /home/awesome/downloads/dcmjs.js
 /tmp/data/sr.dcm
 ```
@@ -116,7 +137,7 @@ The following is expected to work:
 
 ```
 cd /tmp
-node /home/awesome/downloads/dcmjs.js dsr2xml /working/data/sr.dcm
+node /home/awesome/downloads/dcmjs-cli dsr2xml /working/data/sr.dcm
 ```
 
 Add / Remove applications
