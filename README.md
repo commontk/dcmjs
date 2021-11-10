@@ -1,7 +1,7 @@
 dcmjs
 =====
 
-[![CircleCI](https://circleci.com/gh/commontk/dcmjs.svg?style=svg)](https://circleci.com/gh/commontk/dcmjs)
+_Note: for the pure-JavaScript DICOM implementation, see [github.com/dcmjs-org/dcmjs](https://github.com/dcmjs-org/dcmjs).  The package here may still be useful for specialized tasks._
 
 Overview
 --------
